@@ -1,0 +1,55 @@
+Obtenir et enregistrer des favoris
+---
+tags:
+  - Favoris
+
+securityDefinitions:
+  Bearer:
+    description: "JWT Authorization header {token}"
+    name: "Authorization"
+    in: "header"
+    type: "apiKey"
+
+security:
+  - Bearer: []
+
+path:
+  /:
+    parameters:
+      - in: body
+        name: id
+        required: true
+        description: Supprimer un favori
+    get:
+      responses:
+        "200":
+          description: OK
+
+post:
+  parameters:
+    - name: PostURL
+      description: Enregistrer un nouveau favori.
+      in: body
+      supportedSubmitMethods: ["post"]
+      required: true
+      schema:
+        type: object
+        required:
+          - "onisep_url"
+        properties:
+          onisep_url:
+            type: url
+            example: "http://www.onisep.fr/http/redirection/formation/slug/FOR.7273"
+
+responses:
+  200:
+    description: Lorsque la requête se passe avec succès.
+
+  201:
+    description: L'url est bien enregistrée.
+
+  400:
+    description: L'url n'est pas valide.
+
+  409:
+    description: L'url est déjà enregistrée.

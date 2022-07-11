@@ -1,0 +1,32 @@
+S'enregistrer
+---
+tags:
+  - Authentification
+parameters:
+  - name: body
+    description: Le corps doit contenir les données d'enregistrement de l'utilisateur.
+    in: body
+    required: true
+    schema:
+      type: object
+      required:
+        - "email"
+        - "password"
+        - "username"
+      properties:
+        email:
+          type: "email"
+          example: "onisep_api@gmail.com"
+        username:
+          type: "username"
+          example: "myusername"
+        password:
+          type: "string"
+          format: password
+          example: "********"
+responses:
+  201:
+    description: Lorsqu'un utilisateur s'enregistre avec succès.
+
+  400:
+    description: Un utilisateur fournit des informations d'identification incorrectes.

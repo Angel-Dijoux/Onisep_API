@@ -1,0 +1,46 @@
+Obtenir et enregistrer des favoris
+---
+tags:
+  - Favoris
+
+securityDefinitions:
+  Bearer:
+    description: "JWT Authorization header {token}"
+    name: "Authorization"
+    in: "header"
+    type: "apiKey"
+
+security:
+  - Bearer: []
+
+delete:
+  parameters:
+    - name: DeleteURL
+      description: Enregistrer un nouveau favori.
+      in: path
+      supportedSubmitMethods: ["delete"]
+      required: true
+      schema:
+        type: integer
+        required:
+          - "id"
+        properties:
+          id:
+            type: integer
+            example: 3
+
+responses:
+  204:
+    description: L'url est supprimé.
+  404:
+    description: Cet ID n'existe pas pour cet utilisateur.
+
+components:
+  schemas:
+    Favoris:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
