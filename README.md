@@ -1,5 +1,5 @@
 # Onisep API
-⚠️ Cette API n'est pas une API offcielle de l'[onisep](https://www.onisep.fr/) ⚠️
+⚠️ Cette API n'est pas une API offcielle de l'[onisep](https://www.onisep.fr/)
 
 ---
 
