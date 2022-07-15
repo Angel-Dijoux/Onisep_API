@@ -17,9 +17,24 @@ def handle_favoris():
 
     if request.method == "POST":
 
-        onisep_url = request.get_json().get('onisep_url', '')
+        # get data
+        code_nsf = request.get_json().get('code_nsf', '')
+        sigle_type_formation = request.get_json().get('sigle_type_formation', '')
+        libelle_type_formation = request.get_json().get('libelle_type_formation', '')
+        libelle_formation_principal = request.get_json().get(
+            'libelle_formation_principal', '')
+        sigle_formation = request.get_json().get('sigle_formation', '')
+        duree = request.get_json().get('duree', '')
+        niveau_de_sortie_indicatif = request.get_json().get(
+            'niveau_de_sortie_indicatif', '')
+        code_rncp = request.get_json().get('code_rncp', '')
+        niveau_de_certification = request.get_json().get('niveau_de_certification', '')
+        libelle_niveau_de_certification = request.get_json().get(
+            'libelle_niveau_de_certification', '')
+        tutelle = request.get_json().get('tutelle', '')
+        url_et_id_onisep = request.get_json().get('url_et_id_onisep', '')
 
-        if not validators.url(onisep_url):
+        if not validators.url(url_et_id_onisep):
             return jsonify({
                 "error": "Enter valid url"
             }), HTTP_400_BAD_REQUEST
@@ -29,20 +44,46 @@ def handle_favoris():
         data = []
 
         for item in favoris:
-            data.append(item.onisep_url)
+            data.append(item.url_et_id_onisep)
 
-        if onisep_url in data:
+        if url_et_id_onisep in data:
             return jsonify({
                 "error": "URL already exists"
             }), HTTP_409_CONFLICT
 
-        favori = Favori(onisep_url=onisep_url, request_user_id=current_user)
+        favori = Favori(
+            code_nsf=code_nsf,
+            sigle_type_formation=sigle_type_formation,
+            libelle_type_formation=libelle_type_formation,
+            libelle_formation_principal=libelle_formation_principal,
+            sigle_formation=sigle_formation,
+            duree=duree,
+            niveau_de_sortie_indicatif=niveau_de_sortie_indicatif,
+            code_rncp=code_rncp,
+            niveau_de_certification=niveau_de_certification,
+            libelle_niveau_de_certification=libelle_niveau_de_certification,
+            tutelle=tutelle,
+            url_et_id_onisep=url_et_id_onisep,
+            request_user_id=current_user
+        )
+
         db.session.add(favori)
         db.session.commit()
 
         return jsonify({
             "id": favori.id,
-            "onisep_url": favori.onisep_url,
+            "code_nsf": favori.code_nsf,
+            "sigle_type_formation": favori.sigle_type_formation,
+            "libelle_type_formation": favori.libelle_type_formation,
+            "libelle_formation_principal": favori.libelle_formation_principal,
+            "sigle_formation": favori.sigle_formation,
+            "duree": favori.duree,
+            "niveau_de_sortie_indicatif": favori.niveau_de_sortie_indicatif,
+            "code_rncp": favori.code_rncp,
+            "niveau_de_certification": favori.niveau_de_certification,
+            "libelle_niveau_de_certification": favori.libelle_niveau_de_certification,
+            "tutelle": favori.tutelle,
+            "url_et_id_onisep": favori.url_et_id_onisep,
             "user_id": favori.request_user_id
         }), HTTP_201_CREATED
 
@@ -52,13 +93,26 @@ def handle_favoris():
 
         data = []
 
+        count_item = 0
         for item in favoris:
+            count_item += 1
             data.append({
                 "id": item.id,
-                "onisep_url": item.onisep_url,
+                "code_nsf": item.code_nsf,
+                "sigle_type_formation": item.sigle_type_formation,
+                "libelle_type_formation": item.libelle_type_formation,
+                "libelle_formation_principal": item.libelle_formation_principal,
+                "sigle_formation": item.sigle_formation,
+                "duree": item.duree,
+                "niveau_de_sortie_indicatif": item.niveau_de_sortie_indicatif,
+                "code_rncp": item.code_rncp,
+                "niveau_de_certification": item.niveau_de_certification,
+                "libelle_niveau_de_certification": item.libelle_niveau_de_certification,
+                "tutelle": item.tutelle,
+                "url_et_id_onisep": item.url_et_id_onisep,
             })
 
-        return jsonify({"data": data}), HTTP_200_OK
+        return jsonify({"size": count_item, "results":  data}), HTTP_200_OK
 
 
 @favoris.delete("/<int:id>")

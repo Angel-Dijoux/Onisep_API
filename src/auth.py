@@ -96,7 +96,8 @@ def me():
     return jsonify({
         "username": user.username,
         "email": user.email,
-        "name": user.name
+        "name": user.name,
+        "pdp": user.pdp_url
     }), HTTP_200_OK
 
 
