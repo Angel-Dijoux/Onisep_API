@@ -14,10 +14,10 @@ favoris = Blueprint("favoris", __name__, url_prefix="/api/v1/favoris")
 @swag_from('./docs/favoris/favoris.yaml')
 def handle_favoris():
     current_user = get_jwt_identity()
-
+    # Register a favoris
     if request.method == "POST":
 
-        # get data
+        # Collect informations
         code_nsf = request.get_json().get('code_nsf', '')
         sigle_type_formation = request.get_json().get('sigle_type_formation', '')
         libelle_type_formation = request.get_json().get('libelle_type_formation', '')
@@ -45,7 +45,7 @@ def handle_favoris():
 
         for item in favoris:
             data.append(item.url_et_id_onisep)
-
+        # Verify if is register in database for this user
         if url_et_id_onisep in data:
             return jsonify({
                 "error": "URL already exists"
@@ -86,7 +86,7 @@ def handle_favoris():
             "url_et_id_onisep": favori.url_et_id_onisep,
             "user_id": favori.request_user_id
         }), HTTP_201_CREATED
-
+    # Get favoris for this user
     else:
 
         favoris = Favori.query.filter_by(request_user_id=current_user)
@@ -113,6 +113,8 @@ def handle_favoris():
             })
 
         return jsonify({"size": count_item, "results":  data}), HTTP_200_OK
+
+# Remove_favoris function need JWT token and delete favoris for this user
 
 
 @favoris.delete("/<int:id>")

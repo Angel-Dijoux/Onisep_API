@@ -2,6 +2,8 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
+# Create User row
+
 
 class User(db.Model):
     __tablename__ = 'user'
@@ -17,19 +19,21 @@ class User(db.Model):
     def __repr__(self) -> str:
         return 'User>>> {self.username}'
 
+# Create Favoris row
+
 
 class Favori(db.Model):
     __tablename__ = 'favori'
 
     id = db.Column(db.Integer, primary_key=True)
-    code_nsf = db.Column(db.Integer)
+    code_nsf = db.Column(db.Text)
     sigle_type_formation = db.Column(db.Text)
     libelle_type_formation = db.Column(db.Text)
     libelle_formation_principal = db.Column(db.Text)
     sigle_formation = db.Column(db.Text)
     duree = db.Column(db.Text)
     niveau_de_sortie_indicatif = db.Column(db.Text)
-    code_rncp = db.Column(db.Integer)
+    code_rncp = db.Column(db.Text)
     niveau_de_certification = db.Column(db.Text)
     libelle_niveau_de_certification = db.Column(db.Text)
     tutelle = db.Column(db.Text)
