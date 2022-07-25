@@ -5,4 +5,4 @@ validators==0.20.0
 flask-jwt-extended==4.2.2
 flasgger==0.9.5
 pymssql==2.2.5
-mysql-connector-python==4.21.2
+mysql-connector-python==8.0.29
