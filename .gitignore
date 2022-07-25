@@ -1,6 +1,6 @@
 #Ingore variable env
 
-/
+./
 .env
 
 #Ignore db local file 
