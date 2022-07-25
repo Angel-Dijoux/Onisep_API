@@ -1,0 +1,8 @@
+version: '3.3'
+services: 
+    api:
+        image: onisepapi
+        container_name: Onisep_API
+        restart: always
+        ports: 
+            - 5005:5000
