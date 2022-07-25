@@ -1,7 +1,7 @@
 #Ingore variable env
 
-./
-.env
+/
+.flaskenv
 
 #Ignore db local file 
 src/ 
