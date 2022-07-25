@@ -1,7 +1,11 @@
-#Ingore variable env
+#Ingnore cache
+__pycache__/
+*.py[cod]
+*.Spy.class
+*.pyc
 
-
-/home/angel/Documents/API/onisep/.flaskenv
+#Ignore variable env
+.flaskenv
 
 #Ignore db local file 
 src/ 
