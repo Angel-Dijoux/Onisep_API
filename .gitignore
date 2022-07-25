@@ -1,7 +1,7 @@
 #Ingore variable env
 
 
-.flaskenv
+/home/angel/Documents/API/onisep/.flaskenv
 
 #Ignore db local file 
 src/ 
