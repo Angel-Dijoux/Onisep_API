@@ -1,6 +1,6 @@
 #Ingore variable env
 
-/
+./
 .flaskenv
 
 #Ignore db local file 
