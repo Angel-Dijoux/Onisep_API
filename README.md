@@ -19,7 +19,46 @@ Cette API fournit :
  - Connexion d'un utilisateur
  - Une authentification avec token JWT
  - rafraichissement du token JWT
- - Enregistrement d'un lien Onisep *(pour les formations favorites)*
+ - Enregistrement d'une formation *(pour les formations favorites)*
+ 
+ ## Usages
+ 
+ Cloner le repositorie
+ ``` 
+ gh repo clone Angel-Dijoux/Onisep_API && cd Onisep_API
+ ```
+ ### Sans docker
+ Lancer l'environnement virtuel python
+ ```
+ source /onisep_api/bin/activate
+ ```
+ Lancer le serveur flask
+ ```
+ flask run -h 0.0.0.0 -p 5005
+ ```
+ Vous avez un serveur SQL remplacez ``` sqlite:///onisepapi.db ``` par ```mysql+mysqlconnector://{username}:{password}@{host}/{database} ``` dans [.flaskenv](.flaskenv)
+ ### Avec docker
+ ```
+ docker-compose up -d
+ ```
+ Vous avez un serveur SQL remplacez ``` sqlite:///onisepapi.db ``` par ```mysql+mysqlconnector://{username}:{password}@{host}/{database} ``` dans [docker-compose.yml](docker-compose.yml)
+ 
+ 
+ l'API est maintenant disponible sur http://localhost:5005
+ 
+ ### En production 
+
+Générez un clé secrète comme ceci :
+```
+$ python -c 'import secrets; print(secrets.token_hex())' 
+a4ecf55f5ef3b9943ab655939d5637b92fbcad2037af231fcc7d0946dac280ae
+```
+Et remplacez ```mysecretkey``` par la clée obtenue dans [.env](.env) ou [docker-compose.yml](docker-compose.yml)
+
+Enfin remplacez ``` development ``` par ``` production ``` dans [.flaskenv](.flaskenv) ou [docker-compose.yml](docker-compose.yml)
+ 
+ Docker repositorie : https://hub.docker.com/r/elki97413/onisepapi
+
  
  ## Licence 
  
