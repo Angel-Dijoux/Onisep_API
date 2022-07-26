@@ -1,7 +1,11 @@
 version: '3.3'
 services: 
     api:
-        image: onisepapi
+        image: elki97413/onisepapi
+        environment:
+            - SECRET_KEY=mysecretkey
+            - FLASK_ENV=production
+            - SQLALCHEMY_DB_URI=sqlite:///onisepapi.db
         container_name: Onisep_API
         restart: always
         ports: 
