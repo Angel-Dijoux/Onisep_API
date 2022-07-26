@@ -8,5 +8,4 @@ __pycache__/
 .flaskenv
 
 #Ignore db local file 
-src/ 
 *.db
