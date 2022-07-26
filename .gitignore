@@ -4,8 +4,14 @@ __pycache__/
 *.Spy.class
 *.pyc
 
+#migration ignore
+migrations/*
+
 #Ignore variable env
 .flaskenv
+.dockerignore
+Dockerfile
+start.sh
 
 #Ignore db local file 
 *.db

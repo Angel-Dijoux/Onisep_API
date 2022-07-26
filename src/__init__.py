@@ -2,6 +2,7 @@ from flask import Flask, jsonify
 import os
 from flask_jwt_extended import JWTManager
 from flasgger import swag_from, Swagger
+from flask_migrate import Migrate
 
 from src.auth import auth
 from src.constants.http_status_codes import HTTP_404_NOT_FOUND, HTTP_500_INTERNAL_SERVER_ERROR
@@ -35,6 +36,7 @@ def create_app(test_config=None):
 
     db.app = app
     db.init_app(app)
+    Migrate().init_app(app, db)
 
     JWTManager(app)
 

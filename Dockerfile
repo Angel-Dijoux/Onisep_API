@@ -8,4 +8,10 @@ RUN apt -y update
 RUN apt -y upgrade
 RUN apt -y install python3-dev
 COPY . /app/
-CMD [ "flask", "run", "-h", "0.0.0.0"]
+ENV SECRET_KEY=dev
+ENV FLASK_ENV=production
+ENV SQLALCHEMY_DB_URI=sqlite:///favoris.db
+ENV FLASK_APP=src
+ENV JWT_SECRET_KEY='JWT_SECRET_KEY'
+RUN chmod 777 ./start.sh
+CMD ["./start.sh"]

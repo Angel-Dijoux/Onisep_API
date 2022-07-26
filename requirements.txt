@@ -4,5 +4,5 @@ flask_sqlalchemy==2.5.1
 validators==0.20.0
 flask-jwt-extended==4.2.2
 flasgger==0.9.5
-pymssql==2.2.5
 mysql-connector-python==8.0.29
+Flask-Migrate==3.1.0
