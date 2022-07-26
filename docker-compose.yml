@@ -4,7 +4,7 @@ services:
         image: elki97413/onisepapi
         environment:
             - SECRET_KEY=mysecretkey
-            - FLASK_ENV=production
+            - FLASK_ENV=development
             - SQLALCHEMY_DB_URI=sqlite:///onisepapi.db
         container_name: Onisep_API
         restart: always
