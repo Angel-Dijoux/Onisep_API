@@ -203,18 +203,23 @@ def edit_user():
 # Remove_user funtion need JWT token and remove user in database
 
 
-@auth.get('/me/remove')
+@auth.delete('/me/remove')
 @jwt_required()
 def remove_user():
     user_id = get_jwt_identity()
 
     user = User.query.filter_by(id=user_id).first()
-    favori = Favori.query.filter_by(request_user_id=user_id).first()
+    favori = Favori.query.filter_by(request_user_id=user_id)
 
     if not user:
         return jsonify({"message": "User not found"}), HTTP_404_NOT_FOUND
 
-    db.session.delete(favori)
+    if favori:
+        for favoris in favori:
+            print(favoris)
+            db.session.delete(favoris)
+            db.session.commit()
+
     db.session.delete(user)
     db.session.commit()
 
