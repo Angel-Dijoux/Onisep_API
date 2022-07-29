@@ -10,7 +10,7 @@ RUN apt -y install python3-dev
 COPY . /app/
 ENV SECRET_KEY=dev
 ENV FLASK_ENV=production
-ENV SQLALCHEMY_DB_URI=sqlite:///favoris.db
+ENV SQLALCHEMY_DB_URI=sqlite:///onisepapi.db
 ENV FLASK_APP=src
 ENV JWT_SECRET_KEY='JWT_SECRET_KEY'
 RUN chmod 777 ./start.sh
