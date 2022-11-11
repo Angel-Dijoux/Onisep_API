@@ -32,6 +32,12 @@ Cette API fournit :
  ```
  source /onisep_api/bin/activate
  ```
+ Installer les modules
+ 
+``` 
+pip install -r requirement.txt
+```
+ 
  Lancer le serveur flask
  ```
  flask run -h 0.0.0.0 -p 5005
