@@ -10,7 +10,7 @@ template = {
             "url": "https://twitter.com/Elki_YT",
         },
         "termsOfService": "https://twitter.com/Elki_YT",
-        "version": "1.0.2"
+        "version": "1.0.3"
     },
     "basePath": "/api/v1",  # base bash for blueprint registration
     "schemes": [

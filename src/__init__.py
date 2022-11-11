@@ -40,6 +40,32 @@ def create_app(test_config=None):
 
     JWTManager(app)
 
+    @app.after_request
+    def after_request(response):
+        # Add and remove custom headers for Security reasons
+        # https://github.com/shieldfy/API-Security-Checklist/blob/master/README-de.md
+        # and after Astra Security Check
+        ContentSecurityPolicy = ''
+        ContentSecurityPolicy += "default-src 'self'; "
+        ContentSecurityPolicy += "script-src 'self' 'unsafe-inline'; "
+        ContentSecurityPolicy += "style-src 'self' 'unsafe-inline'; "
+        ContentSecurityPolicy += "img-src 'self' data:; "
+        ContentSecurityPolicy += "connect-src 'self';"
+        response.headers.add('Content-Security-Policy',  ContentSecurityPolicy)
+        response.headers.add('X-Content-Type-Options', 'nosniff')
+        response.headers.add('Strict-Transport-Security',
+                             'max-age=86400; includeSubDomains')
+        response.headers.add('X-Frame-Options', 'deny')
+        response.headers.add('Access-Control-Allow-Methods',
+                             ['GET', 'POST', 'DELETE'])
+        response.headers.add('X-XSS-Protection', '1; mode=block')
+        response.headers.set('Server', '')
+
+        # This is neccessary for a project partner
+        response.headers.add('Access-Control-Allow-Origin', '*')
+
+        return response
+
     @app.errorhandler(HTTP_404_NOT_FOUND)
     def handle_404(e):
         return jsonify({"error": "404 not found"}), HTTP_404_NOT_FOUND
