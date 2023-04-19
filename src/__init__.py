@@ -1,25 +1,23 @@
 from flask import Flask, jsonify
 import os
 from flask_jwt_extended import JWTManager
-from flasgger import swag_from, Swagger
+from flasgger import Swagger
 from flask_migrate import Migrate
 
 from src.auth import auth
-from src.constants.http_status_codes import HTTP_404_NOT_FOUND, HTTP_500_INTERNAL_SERVER_ERROR
+from src.constants.http_status_codes import (
+    HTTP_404_NOT_FOUND,
+    HTTP_500_INTERNAL_SERVER_ERROR,
+)
 from src.favoris import favoris
 from src.db import db
 from src.config.swagger import template, swagger_config
 
 
 def create_app(test_config=None):
-
-    app = Flask(
-        __name__,
-        instance_relative_config=True
-    )
+    app = Flask(__name__, instance_relative_config=True)
 
     if test_config is None:
-
         app.config.from_mapping(
             SECRET_KEY=os.environ.get("SECRET_KEY"),
             SQLALCHEMY_DATABASE_URI=os.environ.get("SQLALCHEMY_DB_URI"),
@@ -28,7 +26,7 @@ def create_app(test_config=None):
             SWAGGER={
                 "title": "Onisep_User API",
                 "uiversion": 3,
-            }
+            },
         )
 
     else:
@@ -42,29 +40,35 @@ def create_app(test_config=None):
 
     @app.after_request
     def after_request(response):
-        # Add and remove custom headers for Security reasons
-        # https://github.com/shieldfy/API-Security-Checklist/blob/master/README-de.md
-        # and after Astra Security Check
-        ContentSecurityPolicy = ''
-        ContentSecurityPolicy += "default-src 'self'; "
-        ContentSecurityPolicy += "script-src 'self' 'unsafe-inline'; "
-        ContentSecurityPolicy += "style-src 'self' 'unsafe-inline'; "
-        ContentSecurityPolicy += "img-src 'self' data:; "
-        ContentSecurityPolicy += "connect-src 'self';"
-        response.headers.add('Content-Security-Policy',  ContentSecurityPolicy)
-        response.headers.add('X-Content-Type-Options', 'nosniff')
-        response.headers.add('Strict-Transport-Security',
-                             'max-age=86400; includeSubDomains')
-        response.headers.add('X-Frame-Options', 'deny')
-        response.headers.add('Access-Control-Allow-Methods',
-                             ['GET', 'POST', 'DELETE'])
-        response.headers.add('X-XSS-Protection', '1; mode=block')
-        response.headers.set('Server', '')
+        if not app.debug:
+            # Add and remove custom headers for Security reasons
+            # https://github.com/shieldfy/API-Security-Checklist/blob/master/README-de.md
+            # and after Astra Security Check
+            ContentSecurityPolicy = ""
+            ContentSecurityPolicy += "default-src 'self'; "
+            ContentSecurityPolicy += "script-src 'self' 'unsafe-inline'; "
+            ContentSecurityPolicy += "style-src 'self' 'unsafe-inline'; "
+            ContentSecurityPolicy += "img-src 'self' data:; "
+            ContentSecurityPolicy += "connect-src 'self';"
+            response.headers.add("Content-Security-Policy", ContentSecurityPolicy)
+            response.headers.add("X-Content-Type-Options", "nosniff")
+            response.headers.add(
+                "Strict-Transport-Security", "max-age=86400; includeSubDomains"
+            )
+            response.headers.add("X-Frame-Options", "deny")
+            response.headers.add(
+                "Access-Control-Allow-Methods", ["GET", "POST", "DELETE"]
+            )
+            response.headers.add("X-XSS-Protection", "1; mode=block")
+            response.headers.set("Server", "")
 
-        # This is neccessary for a project partner
-        response.headers.add('Access-Control-Allow-Origin', '*')
+            # This is neccessary for a project partner
 
-        return response
+            return response
+        else:
+            response.headers.add("Access-Control-Allow-Origin", "*")
+
+            return response
 
     @app.errorhandler(HTTP_404_NOT_FOUND)
     def handle_404(e):
@@ -72,7 +76,10 @@ def create_app(test_config=None):
 
     @app.errorhandler(HTTP_500_INTERNAL_SERVER_ERROR)
     def handle_500(e):
-        return jsonify({"error": "Something went wrong, we are working on it"}), HTTP_500_INTERNAL_SERVER_ERROR
+        return (
+            jsonify({"error": "Something went wrong, we are working on it"}),
+            HTTP_500_INTERNAL_SERVER_ERROR,
+        )
 
     app.register_blueprint(auth)
     app.register_blueprint(favoris)
