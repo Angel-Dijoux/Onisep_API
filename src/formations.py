@@ -15,7 +15,7 @@ formations = Blueprint("formations", __name__, url_prefix="/api/v1/formations")
 
 def filter_by_link(formations: list[dict[str, Any]], id: str) -> dict[str, Any]:
     filtered_list = list(filter(lambda f: f["identifiant"] == id, formations))
-    return filtered_list[0] if filtered_list else []
+    return filtered_list[0] if filtered_list else {}
 
 
 @formations.route("/<string:id>")
