@@ -2,6 +2,7 @@ import requests
 import zipfile
 import json
 import io
+import os
 import xmltodict
 import logging
 
@@ -28,7 +29,11 @@ def convert_to_xml_to_json(xml: dict) -> bool:
     try:
         with open(path + filename, "w") as json_file:
             json_file.write(json_data)
-            logging.debug("File {} is write in {}".format(filename, path))
+            logging.debug(
+                "File {} is write in {}".format(
+                    filename, os.path.abspath(path + filename)
+                )
+            )
             return True
     except Exception:
         logging.debug("Error in convert : " + Exception)
