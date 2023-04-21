@@ -13,24 +13,16 @@ securityDefinitions:
 security:
   - Bearer: []
 
-path:
-  /:
-    parameters:
-      - in: body
-        name: id
-        required: true
-        description: Supprimer un favori
-    get:
-      responses:
-        "200":
-          description: OK
+get:
+    description: Rechercher tous les favoris de l'utilisateur. 
+    produces:
+      - "application/json"
 
 post:
   parameters:
-    - name: PostURL
+    - name: post_favoris
       description: Enregistrer un nouveau favori.
       in: body
-      supportedSubmitMethods: ["post"]
       required: true
       schema:
         type: object
@@ -84,16 +76,15 @@ post:
           url_et_id_onisep:
             type: url
             example: "http://www.onisep.fr/http/redirection/formation/slug/FOR.7273"
+  responses:
+    200:
+      description: Lorsque la requête se passe avec succès.
 
-responses:
-  200:
-    description: Lorsque la requête se passe avec succès.
+    201:
+      description: L'url est bien enregistrée.
 
-  201:
-    description: L'url est bien enregistrée.
+    400:
+      description: L'url n'est pas valide.
 
-  400:
-    description: L'url n'est pas valide.
-
-  409:
-    description: L'url est déjà enregistrée.
+    409:
+      description: L'url est déjà enregistrée.

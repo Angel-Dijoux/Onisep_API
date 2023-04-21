@@ -3,7 +3,7 @@ S'enregistrer
 tags:
   - Authentification
 parameters:
-  - name: body
+  - name: register_user
     description: Le corps doit contenir les données d'enregistrement de l'utilisateur.
     in: body
     required: true
@@ -12,14 +12,14 @@ parameters:
       required:
         - "email"
         - "password"
-        - "username"
+        - "name"
       properties:
         email:
           type: "email"
           example: "onisep_api@gmail.com"
         username:
-          type: "username"
-          example: "myusername"
+          type: "name"
+          example: "myname"
         password:
           type: "string"
           format: password

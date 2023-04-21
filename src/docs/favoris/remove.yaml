@@ -1,4 +1,4 @@
-Obtenir et enregistrer des favoris
+Supprimer un favori
 ---
 tags:
   - Favoris
@@ -15,32 +15,14 @@ security:
 
 delete:
   parameters:
-    - name: DeleteURL
-      description: Enregistrer un nouveau favori.
+    - name: id
+      description: Supprimer un favori.
       in: path
-      supportedSubmitMethods: ["delete"]
       required: true
-      schema:
-        type: integer
-        required:
-          - "id"
-        properties:
-          id:
-            type: integer
-            example: 3
+      type: integer
 
 responses:
   204:
     description: L'url est supprimé.
   404:
-    description: Cet ID n'existe pas pour cet utilisateur.
-
-components:
-  schemas:
-    Favoris:
-      type: object
-      properties:
-        id:
-          type: integer
-        name:
-          type: string
+    description: Cet "id" n'existe pas pour cet utilisateur.

@@ -3,7 +3,7 @@ Se connecter
 tags:
   - Authentification
 parameters:
-  - name: body
+  - name: login_user
     description: Le corps doit contenir les identifiants de connexion de l'utilisateur.
     in: body
     required: true
@@ -15,7 +15,7 @@ parameters:
       properties:
         email:
           type: "email"
-          example: "user@gmail.com"
+          example: "onisep_api@gmail.com"
         password:
           type: "string"
           format: password

@@ -1,0 +1,16 @@
+Rechercher une formation ONISEP
+---
+tags:
+  - Formations
+
+get:
+  parameters:
+    - name: id
+      in: path
+      description: "FOR identifiant"
+      required: true
+      type: string
+
+responses:
+  200:
+    description: La recherche s'est bien passée.
