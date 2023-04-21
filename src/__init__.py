@@ -10,6 +10,7 @@ from src.constants.http_status_codes import (
     HTTP_500_INTERNAL_SERVER_ERROR,
 )
 from src.favoris import favoris
+from src.formations import formations
 from src.db import db
 from src.config.swagger import template, swagger_config
 
@@ -83,6 +84,7 @@ def create_app(test_config=None):
 
     app.register_blueprint(auth)
     app.register_blueprint(favoris)
+    app.register_blueprint(formations)
 
     Swagger(app, config=swagger_config, template=template)
 
