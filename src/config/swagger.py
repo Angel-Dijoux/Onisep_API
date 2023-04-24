@@ -1,7 +1,11 @@
+from src.constants.env import is_dev
+
+from config import ProductionConfig
+
 template = {
     "swagger": "2.0",
     "info": {
-        "title": "Onisep_User API",
+        "title": ProductionConfig.SWAGGER["title"],
         "description": "API for user want register onisep formation",
         "contact": {
             "responsibleOrganization": "",
@@ -10,10 +14,10 @@ template = {
             "url": "https://twitter.com/Elki_YT",
         },
         "termsOfService": "https://twitter.com/Elki_YT",
-        "version": "1.0.3",
+        "version": ProductionConfig.SWAGGER["version"],
     },
     "basePath": "/api/v1",  # base bash for blueprint registration
-    "schemes": ["https", "http"],
+    "schemes": ["http" if is_dev else "https"],
     "securityDefinitions": {
         "Bearer": {
             "type": "apiKey",

@@ -1,4 +1,6 @@
-dev = False
+import os
+
+dev = os.environ.get("ENV") != "production"
 
 
 def is_dev() -> bool:

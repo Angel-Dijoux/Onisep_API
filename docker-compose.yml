@@ -7,8 +7,8 @@ services:
         volumes:
             - db:/var/lib/mysql
         environment:
-            - MYSQL_ROOT_PASSWORD=nJKoG4FHRKr6ahPYM4ihrNpd5NDbaerbjgL
-            - MYSQL_PASSWORD=c6igX9mxa4LMcCmgp8HHG5Aj6J
+            - MYSQL_ROOT_PASSWORD=
+            - MYSQL_PASSWORD=
             - MYSQL_DATABASE=onisep
             - MYSQL_USER=Onisep_Admin
     phpmyadmin:
@@ -26,7 +26,7 @@ services:
             dockerfile: Dockerfile
         image: onisepapi
         environment:
-            - SECRET_KEY="DEV"
+            - SECRET_KEY=
             - SQLALCHEMY_DB_URI=
         container_name: Onisep_API1
         restart: always

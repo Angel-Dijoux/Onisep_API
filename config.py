@@ -22,12 +22,7 @@ class Config(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY")
 
-    SWAGGER = (
-        {
-            "title": "Onisep_User API",
-            "uiversion": 3,
-        },
-    )
+    SWAGGER = {"title": "Onisep_User API", "uiversion": "3", "version": "1.0.4"}
 
 
 class DevelopmentConfig(Config):

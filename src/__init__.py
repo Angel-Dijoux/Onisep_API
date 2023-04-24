@@ -5,7 +5,8 @@ from flask_cors import CORS
 from flasgger import Swagger
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
-
+from .middlewares import after_request
+from .errors import register_error_handlers
 
 from src.constants.http_status_codes import (
     HTTP_404_NOT_FOUND,
@@ -34,29 +35,8 @@ def create_app(config_class=DevelopmentConfig):
     with app.app_context():
         register_blueprints(app)
 
-    @app.after_request
-    def after_request(response):
-        response.headers.add("X-Content-Type-Options", "nosniff")
-        response.headers.add(
-            "Strict-Transport-Security", "max-age=86400; includeSubDomains"
-        )
-        response.headers.add("X-Frame-Options", "deny")
-        response.headers.add("Access-Control-Allow-Methods", ["GET", "POST", "DELETE"])
-        response.headers.add("X-XSS-Protection", "1; mode=block")
-        response.headers.set("Server", "Jojo's")
-
-        return response
-
-    @app.errorhandler(HTTP_404_NOT_FOUND)
-    def handle_404(e):
-        return jsonify({"error": "404 not found"}), HTTP_404_NOT_FOUND
-
-    @app.errorhandler(HTTP_500_INTERNAL_SERVER_ERROR)
-    def handle_500(e):
-        return (
-            jsonify({"error": "Something went wrong, we are working on it"}),
-            HTTP_500_INTERNAL_SERVER_ERROR,
-        )
+    app.after_request(after_request)
+    register_error_handlers(app)
 
     Swagger(app, config=swagger_config, template=template)
 
