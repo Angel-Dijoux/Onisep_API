@@ -1,4 +1,5 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request,Response
+from werkzeug.exceptions import HTTPException
 import validators
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from flasgger import swag_from
@@ -20,7 +21,7 @@ favoris = Blueprint("favoris", __name__, url_prefix="/api/v1/favoris")
 @favoris.route("/", methods=["POST"])
 @jwt_required()
 @swag_from("../docs/favoris/postFavoris.yaml")
-def post_favori_by_user_id():
+def post_favori_by_user_id() -> Response | HTTPException:
     current_user = get_jwt_identity()
         # Collect informations
     favori_data = request.get_json()
@@ -40,7 +41,7 @@ def post_favori_by_user_id():
 @favoris.route("/", methods=["GET"])
 @jwt_required()
 @swag_from("../docs/favoris/getFavoris.yaml")
-def get_favoris_by_user_id():
+def get_favoris_by_user_id() -> Response | HTTPException:
     current_user = get_jwt_identity()
     favoris = Favori.query.filter_by(request_user_id=current_user).all()
     return jsonify({"size": len(favoris), "results": favoris}), HTTP_200_OK
@@ -51,7 +52,7 @@ def get_favoris_by_user_id():
 @favoris.delete("/<int:id>")
 @jwt_required()
 @swag_from("../docs/favoris/remove.yaml")
-def remove_favori(id):
+def remove_favori(id: int) -> Response | HTTPException:
     current_user = get_jwt_identity()
 
     favori = Favori.query.filter_by(request_user_id=current_user, id=id).first()
