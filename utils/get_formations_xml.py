@@ -14,7 +14,7 @@ response = requests.get(url)
 
 
 # Extraire le fichier XML du zip
-def extract_xml(response: requests) -> dict:
+def extract_xml(response: requests.Response) -> dict:
     with zipfile.ZipFile(io.BytesIO(response.content)) as myzip:
         with myzip.open(myzip.namelist()[0]) as myfile:
             logging.debug("File {} is extract to .XML.".format(myzip.namelist()[0]))
@@ -36,7 +36,7 @@ def convert_to_xml_to_json(xml: dict) -> bool:
             )
             return True
     except Exception:
-        logging.debug("Error in convert : " + Exception)
+        logging.debug(f"Error in convert : {Exception}")
         return False
 
 

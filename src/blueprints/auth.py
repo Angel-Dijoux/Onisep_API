@@ -1,4 +1,5 @@
-from flask import Blueprint, jsonify, request, Response, Literal
+from flask import Blueprint, jsonify, request, Response, abort
+from werkzeug.exceptions import HTTPException
 from werkzeug.security import check_password_hash, generate_password_hash
 import validators
 from flask_jwt_extended import (
@@ -28,7 +29,7 @@ auth = Blueprint("auth", __name__, url_prefix="/api/v1/auth")
 
 @auth.post("/register")
 @swag_from("../docs/auth/login/register.yaml")
-def register() -> Response | Literal:
+def register() -> tuple[Response, int] | HTTPException:
     # Collect informations
     data = request.json
     if data is not None:
@@ -39,31 +40,27 @@ def register() -> Response | Literal:
 
         # Verify if password is large enought
         if len(password) < 6:
-            return jsonify({"error": "Password is too short"}), HTTP_400_BAD_REQUEST
+            abort(HTTP_400_BAD_REQUEST, "Password is too short")
         # Verify if username is large enought
         if len(username) < 3:
-            return jsonify({"error": "Username is too short"}), HTTP_400_BAD_REQUEST
+            abort(HTTP_400_BAD_REQUEST, "Username is too short")
         # Verify if username have alphanumeric characters or space
         if not username.isalnum() or " " in username:
-            return (
-                jsonify({"error": "Username shloud be alphanumeric, also no spaces"}),
-                HTTP_400_BAD_REQUEST,
+            abort(
+                HTTP_400_BAD_REQUEST, "Username shloud be alphanumeric, also no spaces"
             )
         # Verify if name have alphanumeric characters or space
         if not name.isalnum() or " " in name:
-            return (
-                jsonify({"error": "Name shloud be alphanumeric, also no spaces"}),
-                HTTP_400_BAD_REQUEST,
-            )
+            abort(HTTP_400_BAD_REQUEST, "Name shloud be alphanumeric, also no spaces")
         # Verify with "validators" if email is valid
         if not validators.email(email):
-            return jsonify({"error": "Email is not valid"}), HTTP_400_BAD_REQUEST
+            abort(HTTP_409_CONFLICT, "Email is not valid")
         # Verify if email is in database
         if User.query.filter_by(email=email).first() is not None:
-            return jsonify({"error": "Email is taken"}), HTTP_409_CONFLICT
+            abort(HTTP_409_CONFLICT, "Email is taken")
         # Verify if username is in database
         if User.query.filter_by(username=username).first() is not None:
-            return jsonify({"error": "username is taken"}), HTTP_409_CONFLICT
+            abort(HTTP_409_CONFLICT, "username is taken")
         # Hash password
         pwd_hash = generate_password_hash(password)
 
@@ -80,7 +77,7 @@ def register() -> Response | Literal:
             ),
             HTTP_201_CREATED,
         )
-    return jsonify({"error": "Invalid request body"}), HTTP_400_BAD_REQUEST
+    return abort(HTTP_400_BAD_REQUEST, "Invalid request body")
 
 
 # Login function in "/api/v1/auth/login" with flasgger
@@ -88,7 +85,7 @@ def register() -> Response | Literal:
 
 @auth.post("/login")
 @swag_from("../docs/auth/login/login.yaml")
-def login() -> Response | Literal:
+def login() -> tuple[Response, int] | HTTPException:
     # Collect informations
     data = request.json
     if data is not None:
@@ -118,8 +115,8 @@ def login() -> Response | Literal:
                     ),
                     HTTP_200_OK,
                 )
-        return jsonify({"error": "Wrong credendials"}), HTTP_401_UNAUTHORIZED
-    return jsonify({"error": "Invalid request body"}), HTTP_400_BAD_REQUEST
+        abort(HTTP_401_UNAUTHORIZED, "Wrong credendials")
+    abort(HTTP_400_BAD_REQUEST, "Invalid request body")
 
 
 # Me function need JWT token return userInfo
@@ -128,7 +125,7 @@ def login() -> Response | Literal:
 @auth.get("/me")
 @jwt_required()
 @swag_from("../docs/auth/me.yaml")
-def me() -> Response | Literal:
+def me() -> tuple[Response, int]:
     user_id = get_jwt_identity()
 
     user = User.query.filter_by(id=user_id).first()
@@ -144,7 +141,7 @@ def me() -> Response | Literal:
 
 @auth.get("/token/refresh")
 @jwt_required(refresh=True)
-def refresh_token() -> Response | Literal:
+def refresh_token() -> tuple[Response, int]:
     identity = get_jwt_identity()
     access = create_access_token(identity=identity)
 
@@ -157,7 +154,7 @@ def refresh_token() -> Response | Literal:
 @auth.post("/me/edit")
 @jwt_required()
 @swag_from("../docs/auth/edit.yaml")
-def edit_user() -> Response | Literal:
+def edit_user() -> tuple[Response, int] | HTTPException:
     user_id = get_jwt_identity()
 
     user = User.query.filter_by(id=user_id).first()
@@ -211,7 +208,7 @@ def edit_user() -> Response | Literal:
                 user.password = generate_password_hash(password)
 
         if errors:
-            return jsonify({"errors": errors}), HTTP_400_BAD_REQUEST
+            abort(HTTP_400_BAD_REQUEST, errors)
 
         db.session.commit()
 
@@ -223,7 +220,7 @@ def edit_user() -> Response | Literal:
                 }
             )
         ), HTTP_200_OK
-    return jsonify({"error": "Invalid request body"}), HTTP_400_BAD_REQUEST
+    abort(HTTP_400_BAD_REQUEST, "Invalid request body")
 
 
 # Remove_user funtion need JWT token and remove user in database
@@ -238,12 +235,12 @@ def remove_favoris(user_id: int) -> None:
 @auth.delete("/me/remove")
 @jwt_required()
 @swag_from("../docs/auth/remove.yaml")
-def remove_user() -> Response | Literal:
+def remove_user() -> tuple[Response, int] | HTTPException:
     user_id = get_jwt_identity()
     user = User.query.filter_by(id=user_id).first()
 
     if not user:
-        return jsonify({"message": "User not found"}), HTTP_404_NOT_FOUND
+        abort(HTTP_404_NOT_FOUND, "User not found")
 
     remove_favoris(user_id)
 
