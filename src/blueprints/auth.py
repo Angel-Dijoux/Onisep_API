@@ -30,10 +30,14 @@ auth = Blueprint("auth", __name__, url_prefix="/api/v1/auth")
 @swag_from("../docs/auth/login/register.yaml")
 def register():
     # Collect informations
-    username = request.json["username"]
-    name = request.json["name"]
-    email = request.json["email"]
-    password = request.json["password"]
+    data = request.json
+    try: 
+        username = data["username"]
+        name = data["name"]
+        email = data["email"]
+        password = data["password"]
+    except KeyError:
+        return jsonify({"error": "Invalid request body"}), HTTP_400_BAD_REQUEST
 
     # Verify if password is large enought
     if len(password) < 6:
@@ -90,9 +94,15 @@ def register():
 @auth.post("/login")
 @swag_from("../docs/auth/login/login.yaml")
 def login():
-    email = request.json.get("email", "")
-    password = request.json.get("password", "")
+    # Collect informations
+    data = request.json
+    try: 
+        email = data["email"]
+        password = data["password"]
 
+    except KeyError:
+        return jsonify({"error": "Invalid request body"}), HTTP_400_BAD_REQUEST
+    
     user = User.query.filter_by(email=email).first()
 
     if user:
@@ -163,74 +173,63 @@ def refresh_token():
 def edit_user():
     user_id = get_jwt_identity()
 
-    username = request.json["username"]
-    name = request.json["name"]
-    pdp_url = request.json["pdp_url"]
-    email = request.json["email"]
-    password = request.json["password"]
-    old_password = request.json["old_password"]
 
     user = User.query.filter_by(id=user_id).first()
 
+    username = request.json.get("username", user.username)
+    name = request.json.get("name", user.name)
+    pdp_url = request.json.get("pdp_url", user.pdp_url)
+    email = request.json.get("email", user.email)
+    password = request.json.get("password")
+    old_password = request.json.get("old_password")
+
+    errors = {}
+
     # Data check before sending
-    if username:
-        if username == user.username:
-            return {"error": "Same username"}, HTTP_409_CONFLICT
+    if username != user.username:
         if len(username) < 3:
-            return jsonify({"error": "Username is too short"}), HTTP_400_BAD_REQUEST
-        if not username.isalnum() or " " in username:
-            return (
-                jsonify({"error": "Username shloud be alphanumeric, also no spaces"}),
-                HTTP_400_BAD_REQUEST,
-            )
-        if User.query.filter_by(username=username).first() is not None:
-            return jsonify({"error": "username is taken"}), HTTP_409_CONFLICT
-
-        user.username = username
-        db.session.commit()
-
-    if name:
+            errors["username"] = "Username is too short"
+        elif not username.isalnum() or " " in username:
+            errors["username"] = "Username should be alphanumeric, also no spaces"
+        elif User.query.filter_by(username=username).first() is not None:
+            errors["username"] = "Username is taken"
+        else:
+            user.username = username
+    if name != user.name:
         if not name.isalnum() or " " in name:
-            return (
-                jsonify({"error": "Name shloud be alphanumeric, also no spaces"}),
-                HTTP_400_BAD_REQUEST,
-            )
-
-        user.name = name
-        db.session.commit()
-    if pdp_url:
+            errors["name"] = "Name should be alphanumeric, also no spaces"
+        else:
+            user.name = name
+    if pdp_url != user.pdp_url:
         user.pdp_url = pdp_url
-        db.session.commit()
-    if email:
-        if email == user.email:
-            return {"error": "Same email"}, HTTP_409_CONFLICT
 
+    if email != user.email:
         if not validators.email(email):
-            return jsonify({"error": "Email is not valid"}), HTTP_400_BAD_REQUEST
-
-        if User.query.filter_by(email=email).first() is not None:
-            return jsonify({"error": "Email is taken"}), HTTP_409_CONFLICT
-
-        user.email = email
-        db.session.commit()
+            errors["email"] = "Email is not valid"
+        elif User.query.filter_by(email=email).first() is not None:
+            errors["email"] = "Email is taken"
+        else:
+            user.email = email
 
     if password and old_password:
-        is_pass_correct = check_password_hash(user.password, old_password)
-
         if password == old_password:
-            return {"erro": "Is same password"}, HTTP_409_CONFLICT
-        if len(password) < 6:
-            return jsonify({"error": "Password is too short"}), HTTP_400_BAD_REQUEST
+            errors["password"] = "New password must be different from old password"
+        elif len(password) < 6:
+            errors["password"] = "Password is too short"
+        elif not check_password_hash(user.password, old_password):
+            errors["password"] = "Invalid old password"
+        else:
+            user.password = generate_password_hash(password)
 
-        elif is_pass_correct:
-            pwd_hash = generate_password_hash(password)
-            user.password = pwd_hash
-            db.session.commit()
+    if errors:
+        return jsonify({"errors": errors}), HTTP_400_BAD_REQUEST
+
+    db.session.commit()
 
     return (
         jsonify(
             {
-                "message": "Is edit",
+                "message": "User updated",
                 "user": {
                     "username": user.username,
                     "name": user.name,
@@ -245,22 +244,22 @@ def edit_user():
 # Remove_user funtion need JWT token and remove user in database
 
 
+def remove_favoris(user_id: int) -> None:
+    favoris = Favori.query.filter_by(request_user_id=user_id).all()
+    list(map(lambda f: db.session.delete(f), favoris))
+    db.session.commit()
+
+
 @auth.delete("/me/remove")
 @jwt_required()
 def remove_user():
     user_id = get_jwt_identity()
-
     user = User.query.filter_by(id=user_id).first()
-    favori = Favori.query.filter_by(request_user_id=user_id)
 
     if not user:
         return jsonify({"message": "User not found"}), HTTP_404_NOT_FOUND
-
-    if favori:
-        for favoris in favori:
-            print(favoris)
-            db.session.delete(favoris)
-            db.session.commit()
+    
+    remove_favoris(user_id)
 
     db.session.delete(user)
     db.session.commit()

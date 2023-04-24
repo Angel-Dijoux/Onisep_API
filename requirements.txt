@@ -8,3 +8,4 @@ flasgger==0.9.5
 mysql-connector-python==8.0.29
 Flask-Migrate==3.1.0
 xmltodict==0.13.0
+black==23.3.0
