@@ -1,4 +1,5 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, Response
+from werkzeug.exceptions import HTTPException
 from werkzeug.security import check_password_hash, generate_password_hash
 import validators
 from flask_jwt_extended import (
@@ -28,7 +29,7 @@ auth = Blueprint("auth", __name__, url_prefix="/api/v1/auth")
 
 @auth.post("/register")
 @swag_from("../docs/auth/login/register.yaml")
-def register():
+def register() -> Response | HTTPException:
     # Collect informations
     data = request.json
     try: 
@@ -93,7 +94,7 @@ def register():
 
 @auth.post("/login")
 @swag_from("../docs/auth/login/login.yaml")
-def login():
+def login() -> Response | HTTPException:
     # Collect informations
     data = request.json
     try: 
@@ -135,7 +136,7 @@ def login():
 @auth.get("/me")
 @jwt_required()
 @swag_from("../docs/auth/me.yaml")
-def me():
+def me() -> Response | HTTPException:
     user_id = get_jwt_identity()
 
     user = User.query.filter_by(id=user_id).first()
@@ -159,7 +160,7 @@ def me():
 
 @auth.get("/token/refresh")
 @jwt_required(refresh=True)
-def refresh_token():
+def refresh_token() -> Response | HTTPException:
     identity = get_jwt_identity()
     access = create_access_token(identity=identity)
 
@@ -172,7 +173,7 @@ def refresh_token():
 @auth.post("/me/edit")
 @jwt_required()
 @swag_from("../docs/auth/edit.yaml")
-def edit_user():
+def edit_user() -> Response | HTTPException:
     user_id = get_jwt_identity()
 
 
@@ -255,7 +256,7 @@ def remove_favoris(user_id: int) -> None:
 @auth.delete("/me/remove")
 @jwt_required()
 @swag_from("../docs/auth/remove.yaml")
-def remove_user():
+def remove_user() -> Response | HTTPException:
     user_id = get_jwt_identity()
     user = User.query.filter_by(id=user_id).first()
 
