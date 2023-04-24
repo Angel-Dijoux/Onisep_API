@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask
 import os
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
@@ -8,14 +8,11 @@ from flask_sqlalchemy import SQLAlchemy
 from .middlewares import after_request
 from .errors import register_error_handlers
 
-from src.constants.http_status_codes import (
-    HTTP_404_NOT_FOUND,
-    HTTP_500_INTERNAL_SERVER_ERROR,
-)
-
 from src.config.swagger import template, swagger_config
 
 from config import DevelopmentConfig, ProductionConfig
+
+from src.constants.env import is_dev
 
 db = SQLAlchemy()
 
@@ -23,7 +20,7 @@ db = SQLAlchemy()
 def create_app(config_class=DevelopmentConfig):
     app = Flask(__name__, instance_relative_config=True)
 
-    if os.environ.get("ENV") == "production":
+    if not is_dev():
         config_class = ProductionConfig
 
     app.config.from_object(config_class)
@@ -39,7 +36,7 @@ def create_app(config_class=DevelopmentConfig):
     register_error_handlers(app)
 
     Swagger(app, config=swagger_config, template=template)
-
+    
     return app
 
 
