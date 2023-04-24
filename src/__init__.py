@@ -1,5 +1,4 @@
 from flask import Flask
-import os
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 from flasgger import Swagger
@@ -36,7 +35,6 @@ def create_app(config_class=DevelopmentConfig):
     register_error_handlers(app)
 
     Swagger(app, config=swagger_config, template=template)
-    
     return app
 
 

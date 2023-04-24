@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from src import db
 
+
 @dataclass
 class Favori(db.Model):
     __tablename__ = "favori"

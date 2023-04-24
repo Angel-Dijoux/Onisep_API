@@ -1,5 +1,4 @@
-from flask import Blueprint, jsonify, request, Response
-from werkzeug.exceptions import HTTPException
+from flask import Blueprint, jsonify, request, Response, Literal
 from werkzeug.security import check_password_hash, generate_password_hash
 import validators
 from flask_jwt_extended import (
@@ -29,60 +28,59 @@ auth = Blueprint("auth", __name__, url_prefix="/api/v1/auth")
 
 @auth.post("/register")
 @swag_from("../docs/auth/login/register.yaml")
-def register() -> Response | HTTPException:
+def register() -> Response | Literal:
     # Collect informations
     data = request.json
-    try: 
-        username = data["username"]
-        name = data["name"]
-        email = data["email"]
-        password = data["password"]
-    except KeyError:
-        return jsonify({"error": "Invalid request body"}), HTTP_400_BAD_REQUEST
+    if data is not None:
+        username = data.get("username")
+        name = data.get("name")
+        email = data.get("email")
+        password = data.get("password")
 
-    # Verify if password is large enought
-    if len(password) < 6:
-        return jsonify({"error": "Password is too short"}), HTTP_400_BAD_REQUEST
-    # Verify if username is large enought
-    if len(username) < 3:
-        return jsonify({"error": "Username is too short"}), HTTP_400_BAD_REQUEST
-    # Verify if username have alphanumeric characters or space
-    if not username.isalnum() or " " in username:
+        # Verify if password is large enought
+        if len(password) < 6:
+            return jsonify({"error": "Password is too short"}), HTTP_400_BAD_REQUEST
+        # Verify if username is large enought
+        if len(username) < 3:
+            return jsonify({"error": "Username is too short"}), HTTP_400_BAD_REQUEST
+        # Verify if username have alphanumeric characters or space
+        if not username.isalnum() or " " in username:
+            return (
+                jsonify({"error": "Username shloud be alphanumeric, also no spaces"}),
+                HTTP_400_BAD_REQUEST,
+            )
+        # Verify if name have alphanumeric characters or space
+        if not name.isalnum() or " " in name:
+            return (
+                jsonify({"error": "Name shloud be alphanumeric, also no spaces"}),
+                HTTP_400_BAD_REQUEST,
+            )
+        # Verify with "validators" if email is valid
+        if not validators.email(email):
+            return jsonify({"error": "Email is not valid"}), HTTP_400_BAD_REQUEST
+        # Verify if email is in database
+        if User.query.filter_by(email=email).first() is not None:
+            return jsonify({"error": "Email is taken"}), HTTP_409_CONFLICT
+        # Verify if username is in database
+        if User.query.filter_by(username=username).first() is not None:
+            return jsonify({"error": "username is taken"}), HTTP_409_CONFLICT
+        # Hash password
+        pwd_hash = generate_password_hash(password)
+
+        user = User(username=username, password=pwd_hash, email=email, name=name)
+        db.session.add(user)
+        db.session.commit()
+
         return (
-            jsonify({"error": "Username shloud be alphanumeric, also no spaces"}),
-            HTTP_400_BAD_REQUEST,
+            jsonify(
+                {
+                    "message": "User created",
+                    "user": user,
+                }
+            ),
+            HTTP_201_CREATED,
         )
-    # Verify if name have alphanumeric characters or space
-    if not name.isalnum() or " " in name:
-        return (
-            jsonify({"error": "Name shloud be alphanumeric, also no spaces"}),
-            HTTP_400_BAD_REQUEST,
-        )
-    # Verify with "validators" if email is valid
-    if not validators.email(email):
-        return jsonify({"error": "Email is not valid"}), HTTP_400_BAD_REQUEST
-    # Verify if email is in database
-    if User.query.filter_by(email=email).first() is not None:
-        return jsonify({"error": "Email is taken"}), HTTP_409_CONFLICT
-    # Verify if username is in database
-    if User.query.filter_by(username=username).first() is not None:
-        return jsonify({"error": "username is taken"}), HTTP_409_CONFLICT
-    # Hash password
-    pwd_hash = generate_password_hash(password)
-
-    user = User(username=username, password=pwd_hash, email=email, name=name)
-    db.session.add(user)
-    db.session.commit()
-
-    return (
-        jsonify(
-            {
-                "message": "User created",
-                "user": user,
-            }
-        ),
-        HTTP_201_CREATED,
-    )
+    return jsonify({"error": "Invalid request body"}), HTTP_400_BAD_REQUEST
 
 
 # Login function in "/api/v1/auth/login" with flasgger
@@ -90,40 +88,38 @@ def register() -> Response | HTTPException:
 
 @auth.post("/login")
 @swag_from("../docs/auth/login/login.yaml")
-def login() -> Response | HTTPException:
+def login() -> Response | Literal:
     # Collect informations
     data = request.json
-    try: 
-        email = data["email"]
-        password = data["password"]
+    if data is not None:
+        email = data.get("email")
+        password = data.get("password")
 
-    except KeyError:
-        return jsonify({"error": "Invalid request body"}), HTTP_400_BAD_REQUEST
-    
-    user = User.query.filter_by(email=email).first()
+        user = User.query.filter_by(email=email).first()
 
-    if user:
-        # Verify if password check with password in database
-        is_pass_correct = check_password_hash(user.password, password)
+        if user:
+            # Verify if password check with password in database
+            is_pass_correct = check_password_hash(user.password, password)
 
-        if is_pass_correct:
-            refresh = create_refresh_token(identity=user.id)
-            access = create_access_token(identity=user.id)
+            if is_pass_correct:
+                refresh = create_refresh_token(identity=user.id)
+                access = create_access_token(identity=user.id)
 
-            return (
-                jsonify(
-                    {
-                        "user": {
-                            "refresh": refresh,
-                            "access": access,
-                            "username": user.username,
-                            "email": user.email,
+                return (
+                    jsonify(
+                        {
+                            "user": {
+                                "refresh": refresh,
+                                "access": access,
+                                "username": user.username,
+                                "email": user.email,
+                            }
                         }
-                    }
-                ),
-                HTTP_200_OK,
-            )
-    return jsonify({"error": "Wrong credendials"}), HTTP_401_UNAUTHORIZED
+                    ),
+                    HTTP_200_OK,
+                )
+        return jsonify({"error": "Wrong credendials"}), HTTP_401_UNAUTHORIZED
+    return jsonify({"error": "Invalid request body"}), HTTP_400_BAD_REQUEST
 
 
 # Me function need JWT token return userInfo
@@ -132,7 +128,7 @@ def login() -> Response | HTTPException:
 @auth.get("/me")
 @jwt_required()
 @swag_from("../docs/auth/me.yaml")
-def me() -> Response | HTTPException:
+def me() -> Response | Literal:
     user_id = get_jwt_identity()
 
     user = User.query.filter_by(id=user_id).first()
@@ -148,7 +144,7 @@ def me() -> Response | HTTPException:
 
 @auth.get("/token/refresh")
 @jwt_required(refresh=True)
-def refresh_token() -> Response | HTTPException:
+def refresh_token() -> Response | Literal:
     identity = get_jwt_identity()
     access = create_access_token(identity=identity)
 
@@ -161,70 +157,73 @@ def refresh_token() -> Response | HTTPException:
 @auth.post("/me/edit")
 @jwt_required()
 @swag_from("../docs/auth/edit.yaml")
-def edit_user() -> Response | HTTPException:
+def edit_user() -> Response | Literal:
     user_id = get_jwt_identity()
-
 
     user = User.query.filter_by(id=user_id).first()
 
-    username = request.json.get("username", user.username)
-    name = request.json.get("name", user.name)
-    pdp_url = request.json.get("pdp_url", user.pdp_url)
-    email = request.json.get("email", user.email)
-    password = request.json.get("password")
-    old_password = request.json.get("old_password")
+    data = request.json
 
-    errors = {}
+    if data is not None:
+        username = data.get("username", user.username)
+        name = data.get("name", user.name)
+        pdp_url = data.get("pdp_url", user.pdp_url)
+        email = data.get("email", user.email)
+        password = data.get("password")
+        old_password = data.get("old_password")
 
-    # Data check before sending
-    if username != user.username:
-        if len(username) < 3:
-            errors["username"] = "Username is too short"
-        elif not username.isalnum() or " " in username:
-            errors["username"] = "Username should be alphanumeric, also no spaces"
-        elif User.query.filter_by(username=username).first() is not None:
-            errors["username"] = "Username is taken"
-        else:
-            user.username = username
-    if name != user.name:
-        if not name.isalnum() or " " in name:
-            errors["name"] = "Name should be alphanumeric, also no spaces"
-        else:
-            user.name = name
-    if pdp_url != user.pdp_url:
-        user.pdp_url = pdp_url
+        errors = {}
 
-    if email != user.email:
-        if not validators.email(email):
-            errors["email"] = "Email is not valid"
-        elif User.query.filter_by(email=email).first() is not None:
-            errors["email"] = "Email is taken"
-        else:
-            user.email = email
+        # Data check before sending
+        if username != user.username:
+            if len(username) < 3:
+                errors["username"] = "Username is too short"
+            elif not username.isalnum() or " " in username:
+                errors["username"] = "Username should be alphanumeric, also no spaces"
+            elif User.query.filter_by(username=username).first() is not None:
+                errors["username"] = "Username is taken"
+            else:
+                user.username = username
+        if name != user.name:
+            if not name.isalnum() or " " in name:
+                errors["name"] = "Name should be alphanumeric, also no spaces"
+            else:
+                user.name = name
+        if pdp_url != user.pdp_url:
+            user.pdp_url = pdp_url
 
-    if password and old_password:
-        if password == old_password:
-            errors["password"] = "New password must be different from old password"
-        elif len(password) < 6:
-            errors["password"] = "Password is too short"
-        elif not check_password_hash(user.password, old_password):
-            errors["password"] = "Invalid old password"
-        else:
-            user.password = generate_password_hash(password)
+        if email != user.email:
+            if not validators.email(email):
+                errors["email"] = "Email is not valid"
+            elif User.query.filter_by(email=email).first() is not None:
+                errors["email"] = "Email is taken"
+            else:
+                user.email = email
 
-    if errors:
-        return jsonify({"errors": errors}), HTTP_400_BAD_REQUEST
+        if password and old_password:
+            if password == old_password:
+                errors["password"] = "New password must be different from old password"
+            elif len(password) < 6:
+                errors["password"] = "Password is too short"
+            elif not check_password_hash(user.password, old_password):
+                errors["password"] = "Invalid old password"
+            else:
+                user.password = generate_password_hash(password)
 
-    db.session.commit()
+        if errors:
+            return jsonify({"errors": errors}), HTTP_400_BAD_REQUEST
 
-    return (
-        jsonify(
-            {
-                "message": "User updated",
-                "user": user,
-            }
-        )
-    ), HTTP_200_OK
+        db.session.commit()
+
+        return (
+            jsonify(
+                {
+                    "message": "User updated",
+                    "user": user,
+                }
+            )
+        ), HTTP_200_OK
+    return jsonify({"error": "Invalid request body"}), HTTP_400_BAD_REQUEST
 
 
 # Remove_user funtion need JWT token and remove user in database
@@ -239,13 +238,13 @@ def remove_favoris(user_id: int) -> None:
 @auth.delete("/me/remove")
 @jwt_required()
 @swag_from("../docs/auth/remove.yaml")
-def remove_user() -> Response | HTTPException:
+def remove_user() -> Response | Literal:
     user_id = get_jwt_identity()
     user = User.query.filter_by(id=user_id).first()
 
     if not user:
         return jsonify({"message": "User not found"}), HTTP_404_NOT_FOUND
-    
+
     remove_favoris(user_id)
 
     db.session.delete(user)

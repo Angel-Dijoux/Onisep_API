@@ -1,5 +1,4 @@
-from flask import Blueprint, jsonify, Response
-from werkzeug.exceptions import HTTPException
+from flask import Blueprint, jsonify, Response, Literal
 from flasgger import swag_from
 import json
 from typing import Any
@@ -21,7 +20,7 @@ def filter_by_link(formations: list[dict[str, Any]], id: str) -> dict[str, Any]:
 
 @formations.route("/<string:id>")
 @swag_from("../docs/formations/formation.yaml")
-def get_formation_by_id(id: str) -> Response | HTTPException:
+def get_formation_by_id(id: str) -> Response | Literal:
     try:
         with open("assets/formation/data.json", "r") as json_file:
             result = filter_by_link(json.load(json_file)["formations"]["formation"], id)

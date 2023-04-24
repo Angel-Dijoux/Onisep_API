@@ -10,6 +10,6 @@ def is_dev() -> bool:
     return dev
 
 
-def set_dev(new_dev: bool) -> bool:
+def set_dev(new_dev: bool) -> None:
     global dev
     dev = new_dev

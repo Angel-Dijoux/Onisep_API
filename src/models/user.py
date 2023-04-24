@@ -3,6 +3,7 @@ from src import db
 
 # Create User row
 
+
 @dataclass
 class User(db.Model):
     __tablename__ = "user"
