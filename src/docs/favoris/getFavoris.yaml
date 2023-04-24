@@ -1,0 +1,23 @@
+Obtenir les favoris de l'utilisateur.
+---
+tags:
+  - Favoris
+
+securityDefinitions:
+  Bearer:
+    description: "JWT Authorization header {token}"
+    name: "Authorization"
+    in: "header"
+    type: "apiKey"
+
+security:
+  - Bearer: []
+
+get:
+  description: Rechercher tous les favoris de l'utilisateur. 
+  produces:
+    - "application/json"
+
+responses:
+  200:
+    description: Lorsque la requête se passe avec succès.

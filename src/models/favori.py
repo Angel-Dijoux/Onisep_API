@@ -1,8 +1,24 @@
+from dataclasses import dataclass
 from src import db
 
-
+@dataclass
 class Favori(db.Model):
     __tablename__ = "favori"
+
+    id: int
+    code_nsf: str
+    sigle_type_formation: str
+    libelle_type_formation: str
+    libelle_formation_principal: str
+    sigle_formation: str
+    duree: str
+    niveau_de_sortie_indicatif: str
+    code_rncp: str
+    niveau_de_certification: str
+    libelle_niveau_de_certification: str
+    tutelle: str
+    url_et_id_onisep: str
+    request_user_id: int
 
     id = db.Column(db.Integer, primary_key=True)
     code_nsf = db.Column(db.Text)

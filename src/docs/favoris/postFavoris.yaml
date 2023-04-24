@@ -1,4 +1,4 @@
-Obtenir et enregistrer des favoris
+Enregistrer un favori pour l'utilisateur.
 ---
 tags:
   - Favoris
@@ -12,11 +12,6 @@ securityDefinitions:
 
 security:
   - Bearer: []
-
-get:
-    description: Rechercher tous les favoris de l'utilisateur. 
-    produces:
-      - "application/json"
 
 post:
   parameters:
@@ -77,9 +72,6 @@ post:
             type: url
             example: "http://www.onisep.fr/http/redirection/formation/slug/FOR.7273"
 responses:
-  200:
-    description: Lorsque la requête se passe avec succès.
-
   201:
     description: L'url est bien enregistrée.
 
