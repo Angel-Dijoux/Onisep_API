@@ -1,0 +1,23 @@
+Supprimer un utilisateur
+---
+tags:
+  - Utilisateur
+
+securityDefinitions:
+  Bearer:
+    description: "JWT Authorization header {token}"
+    name: "Authorization"
+    in: "header"
+    type: "apiKey"
+
+security:
+  - Bearer: []
+
+delete:
+  description: Supprimer l'utilisateur et ses informations. 
+
+responses:
+  204:
+    description: L'utilisateur est supprimer.
+  404:
+    description: Cet utilisateur n'existe pas.

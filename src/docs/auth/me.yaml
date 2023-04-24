@@ -1,0 +1,21 @@
+Informations sur le compte utilisateur
+---
+tags:
+  - Utilisateur
+
+securityDefinitions:
+  Bearer:
+    description: "JWT Authorization header {token}"
+    name: "Authorization"
+    in: "header"
+    type: "apiKey"
+
+security:
+  - Bearer: []
+
+get:
+  description: Informations sur le compte utilisateur. 
+
+responses:
+  200:
+    description: ok.

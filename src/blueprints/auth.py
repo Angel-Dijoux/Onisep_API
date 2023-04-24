@@ -134,6 +134,7 @@ def login():
 
 @auth.get("/me")
 @jwt_required()
+@swag_from("../docs/auth/me.yaml")
 def me():
     user_id = get_jwt_identity()
 
@@ -170,6 +171,7 @@ def refresh_token():
 
 @auth.post("/me/edit")
 @jwt_required()
+@swag_from("../docs/auth/edit.yaml")
 def edit_user():
     user_id = get_jwt_identity()
 
@@ -252,6 +254,7 @@ def remove_favoris(user_id: int) -> None:
 
 @auth.delete("/me/remove")
 @jwt_required()
+@swag_from("../docs/auth/remove.yaml")
 def remove_user():
     user_id = get_jwt_identity()
     user = User.query.filter_by(id=user_id).first()

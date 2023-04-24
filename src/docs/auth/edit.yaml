@@ -1,0 +1,36 @@
+Modifier des informations de l'utilisateur courant. 
+---
+tags:
+  - Utilisateur
+
+securityDefinitions:
+  Bearer:
+    description: "JWT Authorization header {token}"
+    name: "Authorization"
+    in: "header"
+    type: "apiKey"
+
+security:
+  - Bearer: []
+
+post: 
+  parameters:
+    - name: edit_user
+      description: Modifier des informations de l'utilisateur courant. 
+      in: body
+      required: true
+      schema:
+        type: object
+        properties:
+          name:
+            type: string
+            example: Jotaro
+          email:
+             type: string
+             example: oni_api@onisep.fr
+
+responses:
+    400:
+      description: Les informations ne sont pas correctes.
+    200:
+      description: ok
