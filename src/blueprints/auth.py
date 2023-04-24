@@ -78,11 +78,7 @@ def register() -> Response | HTTPException:
         jsonify(
             {
                 "message": "User created",
-                "user": {
-                    "username": username,
-                    "name": name,
-                    "email": email,
-                },
+                "user": user,
             }
         ),
         HTTP_201_CREATED,
@@ -142,15 +138,7 @@ def me() -> Response | HTTPException:
     user = User.query.filter_by(id=user_id).first()
 
     return (
-        jsonify(
-            {
-                "username": user.username,
-                "email": user.email,
-                "name": user.name,
-                "pdp": user.pdp_url,
-                "password": user.password,
-            }
-        ),
+        jsonify(user),
         HTTP_200_OK,
     )
 
@@ -233,12 +221,7 @@ def edit_user() -> Response | HTTPException:
         jsonify(
             {
                 "message": "User updated",
-                "user": {
-                    "username": user.username,
-                    "name": user.name,
-                    "pdp_url": user.pdp_url,
-                    "email": user.email,
-                },
+                "user": user,
             }
         )
     ), HTTP_200_OK

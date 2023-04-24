@@ -1,10 +1,17 @@
+from dataclasses import dataclass
 from src import db
 
 # Create User row
 
-
+@dataclass
 class User(db.Model):
     __tablename__ = "user"
+
+    id: int
+    username: str
+    name: str
+    email: str
+    pdp_url: str
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
