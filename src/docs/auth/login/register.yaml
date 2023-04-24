@@ -13,17 +13,21 @@ parameters:
         - "email"
         - "password"
         - "name"
+        - "usermame"
       properties:
         email:
           type: "email"
           example: "onisep_api@gmail.com"
-        username:
-          type: "name"
-          example: "myname"
         password:
           type: "string"
           format: password
           example: "********"
+        name:
+          type: "name"
+          example: "myname"
+        username:
+          type: "username"
+          example: "Jojo"
 responses:
   201:
     description: Lorsqu'un utilisateur s'enregistre avec succès.

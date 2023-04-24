@@ -1,75 +1,51 @@
 from flask import Flask, jsonify
 import os
 from flask_jwt_extended import JWTManager
+from flask_cors import CORS
 from flasgger import Swagger
 from flask_migrate import Migrate
+from flask_sqlalchemy import SQLAlchemy
 
-from src.auth import auth
+
 from src.constants.http_status_codes import (
     HTTP_404_NOT_FOUND,
     HTTP_500_INTERNAL_SERVER_ERROR,
 )
-from src.favoris import favoris
-from src.formations import formations
-from src.db import db
+
 from src.config.swagger import template, swagger_config
 
+from config import DevelopmentConfig, ProductionConfig
 
-def create_app(test_config=None):
+db = SQLAlchemy()
+
+
+def create_app(config_class=DevelopmentConfig):
     app = Flask(__name__, instance_relative_config=True)
 
-    if test_config is None:
-        app.config.from_mapping(
-            SECRET_KEY=os.environ.get("SECRET_KEY"),
-            SQLALCHEMY_DATABASE_URI=os.environ.get("SQLALCHEMY_DB_URI"),
-            SQLALCHEMY_TRACK_MODIFICATIONS=False,
-            JWT_SECRET_KEY=os.environ.get("JWT_SECRET_KEY"),
-            SWAGGER={
-                "title": "Onisep_User API",
-                "uiversion": 3,
-            },
-        )
+    if os.environ.get("ENV") == "production":
+        config_class = ProductionConfig
 
-    else:
-        app.config.from_mapping(test_config)
-
-    db.app = app
+    app.config.from_object(config_class)
+    CORS(app)
     db.init_app(app)
     Migrate().init_app(app, db)
-
     JWTManager(app)
+
+    with app.app_context():
+        register_blueprints(app)
 
     @app.after_request
     def after_request(response):
-        if not app.debug:
-            # Add and remove custom headers for Security reasons
-            # https://github.com/shieldfy/API-Security-Checklist/blob/master/README-de.md
-            # and after Astra Security Check
-            ContentSecurityPolicy = ""
-            ContentSecurityPolicy += "default-src 'self'; "
-            ContentSecurityPolicy += "script-src 'self' 'unsafe-inline'; "
-            ContentSecurityPolicy += "style-src 'self' 'unsafe-inline'; "
-            ContentSecurityPolicy += "img-src 'self' data:; "
-            ContentSecurityPolicy += "connect-src 'self';"
-            response.headers.add("Content-Security-Policy", ContentSecurityPolicy)
-            response.headers.add("X-Content-Type-Options", "nosniff")
-            response.headers.add(
-                "Strict-Transport-Security", "max-age=86400; includeSubDomains"
-            )
-            response.headers.add("X-Frame-Options", "deny")
-            response.headers.add(
-                "Access-Control-Allow-Methods", ["GET", "POST", "DELETE"]
-            )
-            response.headers.add("X-XSS-Protection", "1; mode=block")
-            response.headers.set("Server", "")
+        response.headers.add("X-Content-Type-Options", "nosniff")
+        response.headers.add(
+            "Strict-Transport-Security", "max-age=86400; includeSubDomains"
+        )
+        response.headers.add("X-Frame-Options", "deny")
+        response.headers.add("Access-Control-Allow-Methods", ["GET", "POST", "DELETE"])
+        response.headers.add("X-XSS-Protection", "1; mode=block")
+        response.headers.set("Server", "Jojo's")
 
-            # This is neccessary for a project partner
-
-            return response
-        else:
-            response.headers.add("Access-Control-Allow-Origin", "*")
-
-            return response
+        return response
 
     @app.errorhandler(HTTP_404_NOT_FOUND)
     def handle_404(e):
@@ -82,10 +58,16 @@ def create_app(test_config=None):
             HTTP_500_INTERNAL_SERVER_ERROR,
         )
 
-    app.register_blueprint(auth)
-    app.register_blueprint(favoris)
-    app.register_blueprint(formations)
-
     Swagger(app, config=swagger_config, template=template)
 
     return app
+
+
+def register_blueprints(app: Flask):
+    from src.blueprints.favoris import favoris
+    from src.blueprints.formations import formations
+    from src.blueprints.auth import auth
+
+    app.register_blueprint(auth)
+    app.register_blueprint(favoris)
+    app.register_blueprint(formations)

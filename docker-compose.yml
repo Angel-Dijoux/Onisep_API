@@ -1,12 +1,38 @@
 version: '3.3'
 services:
-    api:
-        image: onisepapi:v1.0.21
+    db:
+        image: mariadb:latest
+        restart: always
+        command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+        volumes:
+            - db:/var/lib/mysql
         environment:
-            - SECRET_KEY=mysecretkey
-            - FLASK_ENV=development
-            - SQLALCHEMY_DB_URI=sqlite:///onisepapi.db
+            - MYSQL_ROOT_PASSWORD=nJKoG4FHRKr6ahPYM4ihrNpd5NDbaerbjgL
+            - MYSQL_PASSWORD=c6igX9mxa4LMcCmgp8HHG5Aj6J
+            - MYSQL_DATABASE=onisep
+            - MYSQL_USER=Onisep_Admin
+    phpmyadmin:
+        image: phpmyadmin
+        container_name: phpmyadmin
+        environment:
+            - PMA_ARBITRATY=1
+        ports:
+            - 8484:80
+        links:
+            - db
+    api:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        image: onisepapi
+        environment:
+            - SECRET_KEY="DEV"
+            - SQLALCHEMY_DB_URI=
         container_name: Onisep_API1
         restart: always
         ports:
             - 5005:5000
+        depends_on:
+            - db
+volumes:
+    db:
