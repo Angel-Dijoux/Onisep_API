@@ -24,7 +24,6 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
-        image: onisepapi
         environment:
             - SECRET_KEY=
             - SQLALCHEMY_DB_URI=
