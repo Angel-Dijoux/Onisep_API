@@ -6,4 +6,7 @@ jobs:
     runs-on: self-hosted
     
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Build and Run Docker container
+      run: docker-compose up -d
