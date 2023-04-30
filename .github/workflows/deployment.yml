@@ -3,6 +3,7 @@ name: Deploiyment
 on: [push]
 
 env:
+  MARIADB_ROOT_PASSWORD: ${{ secrets.MARIADB_ROOT_PASSWORD }}
   DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
   DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
   SECRET_KEY: ${{ secrets.SECRET_KEY }}
