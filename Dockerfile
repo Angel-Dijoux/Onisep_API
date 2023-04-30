@@ -1,4 +1,4 @@
-FROM python:3.9.16-slim AS build
+FROM python:slim-buster AS build
 ENV PYTHONUNBUFFERED 1
 
 LABEL authors="Angel-Dijoux"
@@ -17,4 +17,6 @@ COPY entrypoint.sh /
 RUN chmod +x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
-CMD [ "gunicorn", "run:app", "-c", "gunicorn.conf.py"]
+EXPOSE 5005
+
+CMD ["gunicorn", "run:app" ,"-c" ,"gunicorn.conf.py" ]

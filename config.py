@@ -10,7 +10,7 @@ def get_prod_db_uri() -> str:
     password = os.environ.get("DATABASE_PASSWORD")
     host = os.environ.get("DATABASE_HOST")
 
-    return f"mysql+mysqlconnector://{username}:{password}@{host}/onisep"
+    return f"mysql+mysqlconnector://{username}:{password}@${host}/onisep?charset=utf8mb4&collation=utf8mb4_general_ci"
 
 
 class Config(object):
@@ -33,3 +33,9 @@ class DevelopmentConfig(Config):
 class ProductionConfig(Config):
     DEBUG = False
     SQLALCHEMY_DATABASE_URI = get_prod_db_uri()
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        "pool_pre_ping": True,
+        "pool_recycle": 300,
+        "pool_size": 10,
+        "max_overflow": 20,
+    }

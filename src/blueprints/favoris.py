@@ -15,13 +15,15 @@ from src.constants.http_status_codes import (
 from src import db
 from src.models import Favori
 
+from typing import Tuple
+
 favoris = Blueprint("favoris", __name__, url_prefix="/api/v1/favoris")
 
 
 @favoris.route("/", methods=["POST"])
 @jwt_required()
 @swag_from("../docs/favoris/postFavoris.yaml")
-def post_favori_by_user_id() -> tuple[Response, int] | HTTPException:
+def post_favori_by_user_id() -> Tuple[Response, int] | HTTPException:
     current_user = get_jwt_identity()
     # Collect informations
     favori_data = request.get_json()
@@ -45,7 +47,7 @@ def post_favori_by_user_id() -> tuple[Response, int] | HTTPException:
 @favoris.route("/", methods=["GET"])
 @jwt_required()
 @swag_from("../docs/favoris/getFavoris.yaml")
-def get_favoris_by_user_id() -> tuple[Response, int]:
+def get_favoris_by_user_id() -> Tuple[Response, int]:
     current_user = get_jwt_identity()
     favoris = Favori.query.filter_by(request_user_id=current_user).all()
     return jsonify({"size": len(favoris), "results": favoris}), HTTP_200_OK
@@ -57,7 +59,7 @@ def get_favoris_by_user_id() -> tuple[Response, int]:
 @favoris.delete("/<int:id>")
 @jwt_required()
 @swag_from("../docs/favoris/remove.yaml")
-def remove_favori(id: int) -> tuple[Response, int] | HTTPException:
+def remove_favori(id: int) -> Tuple[Response, int] | HTTPException:
     current_user = get_jwt_identity()
 
     favori = Favori.query.filter_by(request_user_id=current_user, id=id).first()

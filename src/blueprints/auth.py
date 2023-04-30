@@ -22,6 +22,9 @@ from src.constants.http_status_codes import (
 from src import db
 from src.models import User, Favori
 
+from typing import Tuple
+
+
 auth = Blueprint("auth", __name__, url_prefix="/api/v1/auth")
 
 # Register function in "/api/v1/auth/register" with flasgger
@@ -29,7 +32,7 @@ auth = Blueprint("auth", __name__, url_prefix="/api/v1/auth")
 
 @auth.post("/register")
 @swag_from("../docs/auth/login/register.yaml")
-def register() -> tuple[Response, int] | HTTPException:
+def register() -> Tuple[Response, int] | HTTPException:
     # Collect informations
     data = request.json
     if data is not None:
@@ -85,7 +88,7 @@ def register() -> tuple[Response, int] | HTTPException:
 
 @auth.post("/login")
 @swag_from("../docs/auth/login/login.yaml")
-def login() -> tuple[Response, int] | HTTPException:
+def login() -> Tuple[Response, int] | HTTPException:
     # Collect informations
     data = request.json
     if data is not None:
@@ -125,7 +128,7 @@ def login() -> tuple[Response, int] | HTTPException:
 @auth.get("/me")
 @jwt_required()
 @swag_from("../docs/auth/me.yaml")
-def me() -> tuple[Response, int]:
+def me() -> Tuple[Response, int]:
     user_id = get_jwt_identity()
 
     user = User.query.filter_by(id=user_id).first()
@@ -141,7 +144,7 @@ def me() -> tuple[Response, int]:
 
 @auth.get("/token/refresh")
 @jwt_required(refresh=True)
-def refresh_token() -> tuple[Response, int]:
+def refresh_token() -> Tuple[Response, int]:
     identity = get_jwt_identity()
     access = create_access_token(identity=identity)
 
@@ -154,7 +157,7 @@ def refresh_token() -> tuple[Response, int]:
 @auth.post("/me/edit")
 @jwt_required()
 @swag_from("../docs/auth/edit.yaml")
-def edit_user() -> tuple[Response, int] | HTTPException:
+def edit_user() -> Tuple[Response, int] | HTTPException:
     user_id = get_jwt_identity()
 
     user = User.query.filter_by(id=user_id).first()
@@ -235,7 +238,7 @@ def remove_favoris(user_id: int) -> None:
 @auth.delete("/me/remove")
 @jwt_required()
 @swag_from("../docs/auth/remove.yaml")
-def remove_user() -> tuple[Response, int] | HTTPException:
+def remove_user() -> Tuple[Response, int] | HTTPException:
     user_id = get_jwt_identity()
     user = User.query.filter_by(id=user_id).first()
 

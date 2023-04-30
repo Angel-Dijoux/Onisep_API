@@ -11,7 +11,7 @@ migrations/*
 .flaskenv
 .dockerignore
 Dockerfile
-start.sh
+.env
 
 #Ignore db local file 
 *.db

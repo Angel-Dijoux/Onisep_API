@@ -1,7 +1,7 @@
 import multiprocessing
 
 # Bind
-bind = "127.0.0.1:5005"
+bind = "0.0.0.0:5005"
 
 # Workers
 workers = multiprocessing.cpu_count() * 2 + 1
