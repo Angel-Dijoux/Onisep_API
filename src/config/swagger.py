@@ -17,7 +17,7 @@ template = {
         "version": ProductionConfig.SWAGGER["version"],
     },
     "basePath": "/api/v1",  # base bash for blueprint registration
-    "schemes": ["http" if is_dev() else "https"],
+    "schemes": ["http"],
     "securityDefinitions": {
         "Bearer": {
             "type": "apiKey",

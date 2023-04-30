@@ -1,43 +1,52 @@
 version: '3.3'
 services:
     db:
-        image: mariadb:latest
-        container_name: Onisep_mysql
+        image: mysql:latest
+        container_name: mysql
         restart: always
-        command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW --innodb-buffer-pool-size=2G
+        command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW --innodb-buffer-pool-size=2G  --innodb-buffer-pool-size=2G
         environment:
-            - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
-            - MARIADB_DATABASE=onisep
-            - MARIADB_USER=${DATABASE_USERNAME}
-            - MARIADB_PASSWORD=${DATABASE_PASSWORD}
-        volumes:
-            - db:/var/lib/mysql
-
+            MYSQL_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+            MYSQL_USER: ${DATABASE_USERNAME}
+            MYSQL_PASSWORD: ${DATABASE_PASSWORD}
+            MYSQL_DATABASE: onisep
+        healthcheck:
+            test:
+                [
+                    "CMD",
+                    "mysqladmin",
+                    "ping",
+                    "-h",
+                    "localhost",
+                    "-u",
+                    "root",
+                    "-pexample"
+                ]
+            interval: 45s
+            timeout: 75s
     phpmyadmin:
         image: phpmyadmin
         container_name: Onisep_phpmyadmin
-        environment:
-            - PMA_ARBITRATY=1
-        restart: always
+
         ports:
             - 8484:80
-        links:
+        depends_on:
             - db
     api:
         build:
             context: .
             dockerfile: Dockerfile
-        image: onisep_api:latest
-        container_name: Onisep_REST_API
         environment:
-            - SECRET_KEY=siueubn
+            - SECRET_KEY=${SECRET_KEY}
             - DATABASE_USERNAME:${DATABASE_USERNAME}
             - DATABASE_PASSWORD:${DATABASE_PASSWORD}
             - DATABASE_HOST:db
+        container_name: Onisep_REST_API
         restart: always
         ports:
             - 5005:5005
         depends_on:
-            - db
+            db:
+                condition: service_healthy
 volumes:
     db:
