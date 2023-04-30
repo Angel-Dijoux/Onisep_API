@@ -2,18 +2,18 @@ version: '3.3'
 services:
     db:
         image: mariadb:latest
+        container_name: Onisep_mysql;
         restart: always
         command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
         volumes:
             - db:/var/lib/mysql
         environment:
-            - MYSQL_ROOT_PASSWORD=
-            - MYSQL_PASSWORD=
-            - MYSQL_DATABASE=onisep
-            - MYSQL_USER=Onisep_Admin
+            - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+            - MYSQL_DATABASE=${MYSQL_DATABASE}
+            - MYSQL_USER=${MYSQL_USER}
     phpmyadmin:
         image: phpmyadmin
-        container_name: phpmyadmin
+        container_name: Onisep_phpmyadmin
         environment:
             - PMA_ARBITRATY=1
         ports:
@@ -25,9 +25,9 @@ services:
             context: .
             dockerfile: Dockerfile
         environment:
-            - SECRET_KEY=
-            - SQLALCHEMY_DB_URI=
-        container_name: Onisep_API1
+            - SECRET_KEY=${SECRET_KEY}
+            - SQLALCHEMY_DB_URI=${SQLALCHEMY_DB_URI
+        container_name: Onisep_REST_API
         restart: always
         ports:
             - 5005:5000

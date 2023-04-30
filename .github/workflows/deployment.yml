@@ -1,6 +1,13 @@
 name: Deploiyment
 
 on: [push]
+
+env:
+  MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+  MYSQL_USER: ${{ secrets.MYSQL_USER }}
+  SECRET_KEY: ${{ secrets.SECRET_KEY }}
+  SQLALCHEMY_DB_URI: ${{ secrets.SQLALCHEMY_DB_URI }}
+
 jobs:
   build:
     runs-on: self-hosted
