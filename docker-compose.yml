@@ -2,7 +2,7 @@ version: '3.3'
 services:
     db:
         image: mariadb:latest
-        container_name: Onisep_mysql;
+        container_name: Onisep_mysql
         restart: always
         command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
         volumes:
