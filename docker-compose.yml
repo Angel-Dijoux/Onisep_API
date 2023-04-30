@@ -38,10 +38,10 @@ services:
             context: .
             dockerfile: Dockerfile
         environment:
-            - SECRET_KEY=${SECRET_KEY}
-            - DATABASE_USERNAME:${DATABASE_USERNAME}
-            - DATABASE_PASSWORD:${DATABASE_PASSWORD}
-            - DATABASE_HOST:db
+            SECRET_KEY: ${SECRET_KEY}
+            DATABASE_USERNAME: ${DATABASE_USERNAME}
+            DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+            DATABASE_HOST: db
         container_name: Onisep_REST_API
         restart: always
         ports:
