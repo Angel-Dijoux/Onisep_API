@@ -3,10 +3,9 @@ name: Deploiyment
 on: [push]
 
 env:
-  MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
-  MYSQL_USER: ${{ secrets.MYSQL_USER }}
+  DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+  DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
   SECRET_KEY: ${{ secrets.SECRET_KEY }}
-  SQLALCHEMY_DB_URI: ${{ secrets.SQLALCHEMY_DB_URI }}
 
 jobs:
   build:

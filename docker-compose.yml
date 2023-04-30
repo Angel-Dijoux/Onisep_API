@@ -8,9 +8,9 @@ services:
         volumes:
             - db:/var/lib/mysql
         environment:
-            - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-            - MYSQL_DATABASE=${MYSQL_DATABASE}
-            - MYSQL_USER=${MYSQL_USER}
+            - MYSQL_PASSWORD=${DATABASE_PASSWORD}
+            - MYSQL_DATABASE=onisep
+            - MYSQL_USER=${DATABASE_USERNAME}
     phpmyadmin:
         image: phpmyadmin
         container_name: Onisep_phpmyadmin
@@ -26,7 +26,9 @@ services:
             dockerfile: Dockerfile
         environment:
             - SECRET_KEY=${SECRET_KEY}
-            - SQLALCHEMY_DB_URI=${SQLALCHEMY_DB_URI}
+            - DATABASE_USERNAME:${DATABASE_USERNAME}
+            - DATABASE_PASSWORD:${DATABASE_PASSWORD}
+            - DATABASE_HOST:db
         container_name: Onisep_REST_API
         restart: always
         ports:
