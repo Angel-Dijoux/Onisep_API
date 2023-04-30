@@ -24,6 +24,7 @@ services:
                 ]
             interval: 45s
             timeout: 75s
+            retries: 2
     phpmyadmin:
         image: phpmyadmin
         container_name: Onisep_phpmyadmin
