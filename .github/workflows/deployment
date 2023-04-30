@@ -1,6 +1,0 @@
-jobs:
-  build:
-    runson: self-hosted
-    
-    steps:
-      - uses: actions/checkout@v2
