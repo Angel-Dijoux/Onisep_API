@@ -26,7 +26,7 @@ services:
             dockerfile: Dockerfile
         environment:
             - SECRET_KEY=${SECRET_KEY}
-            - SQLALCHEMY_DB_URI=${SQLALCHEMY_DB_URI
+            - SQLALCHEMY_DB_URI=${SQLALCHEMY_DB_URI}
         container_name: Onisep_REST_API
         restart: always
         ports:
