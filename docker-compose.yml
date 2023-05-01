@@ -2,7 +2,7 @@ version: '3.3'
 
 services:
     db:
-        image: mariadb:10.5
+        image: mysql:latest
         restart: always
         command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
         volumes:
