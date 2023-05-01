@@ -13,7 +13,7 @@ def get_prod_db_uri() -> str:
     password = os.environ.get("DATABASE_PASSWORD")
     host = os.environ.get("DATABASE_HOST")
     print(host, "LOG FROM SERVER")
-    return f"mysql+mysqlconnector://{str(username)}:{str(password)}@{str(host)}/onisep"
+    return f"mysql+mysqlconnector://{str(username)}:{str(password)}@{str(host)}/onisep?charset=utf8mb4&collation=utf8mb4_general_ci"
 
 
 class Config(object):
