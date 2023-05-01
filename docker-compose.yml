@@ -4,6 +4,8 @@ services:
     db:
         image: mariadb:10.8.3-jammy
         platform: linux/amd64
+        command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+
         restart: always
         volumes:
             - db:/var/lib/mysql
