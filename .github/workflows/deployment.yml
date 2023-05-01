@@ -19,7 +19,7 @@ jobs:
     #   run: docker stop api
     # - name: remove container
     #   run: docker rm api
-    - name: Remove previous Docker image
-      run: docker rmi onisep_api-api:latest
+    # - name: Remove previous Docker image
+    #   run: docker rmi onisep_api-api:latest
     - name: Build and Run Docker container
       run: docker-compose up -d
