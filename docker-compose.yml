@@ -12,21 +12,6 @@ services:
             MYSQL_DATABASE: onisep
         volumes:
             - db:/var/lib/mysql
-        healthcheck:
-            test:
-                [
-                    "CMD",
-                    "mysqladmin",
-                    "ping",
-                    "-h",
-                    "localhost",
-                    "-u",
-                    "root",
-                    "-pexample"
-                ]
-            interval: 35s
-            timeout: 55s
-            retries: 2
     phpmyadmin:
         image: phpmyadmin
         restart: always
@@ -51,7 +36,6 @@ services:
         ports:
             - 5005:5005
         depends_on:
-            db:
-                condition: service_healthy
+            - db
 volumes:
     db:

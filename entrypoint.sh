@@ -1,5 +1,6 @@
 #! /bin/bash 
 
+sleep 120
 if [ ! -d "/app/migrations" ]; then
   echo "Init database"
   flask db init

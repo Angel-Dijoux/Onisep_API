@@ -15,8 +15,8 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-    - name: Stop running Docker container
-      run: docker stop api
+    # - name: Stop running Docker container
+    #   run: docker stop api
     - name: remove container
       run: docker rm api
     - name: Remove previous Docker image
