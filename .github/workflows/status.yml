@@ -1,0 +1,19 @@
+name: Check API Availability
+
+on: 
+  schedule:
+    - cron: '0 */8 * * *'  # Runs every 8 hours
+
+jobs:
+  check-api:
+    runs-on: ubuntu:latest
+
+    steps:
+    - name: Check API
+      run: |
+        if curl --output /dev/null --silent --head --fail https://api.nc-elki.v6.army/api/v1/; then
+          echo "API is up and running!"
+        else
+          echo "API is not accessible."
+          exit 1
+        fi
