@@ -9,6 +9,8 @@ L'API Onisep vous fournis une authentification avec token JWT, et la posibilité
 
 [![License](https://img.shields.io/packagist/l/dingo/api.svg?style=flat-square)](LICENSE)
 [![StyleCI](https://github.styleci.io/repos/512832807/shield?branch=main)](https://github.styleci.io/repos/512832807?branch=main)
+[![Build](https://img.shields.io/github/actions/workflow/status/Angel-Dijoux/Onisep_API/deployment.yml?style=flat-square)]()
+[![Status](https://github.com/Angel-Dijoux/Onisep_API/actions/workflows/status.yml/badge.svg?event=status)](https://github.com/Angel-Dijoux/Onisep_API/actions/workflows/status.yml)
 
 
 ## Fonctionnalités
