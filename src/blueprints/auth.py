@@ -109,6 +109,7 @@ def login() -> Tuple[Response, int] | HTTPException:
                     jsonify(
                         {
                             "user": {
+                                "id": user.id,
                                 "refresh": refresh,
                                 "access": access,
                                 "username": user.username,
