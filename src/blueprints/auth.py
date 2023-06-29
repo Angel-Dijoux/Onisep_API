@@ -13,7 +13,6 @@ from flasgger import swag_from
 from src.constants.http_status_codes import (
     HTTP_200_OK,
     HTTP_201_CREATED,
-    HTTP_204_NO_CONTENT,
     HTTP_400_BAD_REQUEST,
     HTTP_401_UNAUTHORIZED,
     HTTP_404_NOT_FOUND,
@@ -251,4 +250,4 @@ def remove_user() -> Tuple[Response, int] | HTTPException:
     db.session.delete(user)
     db.session.commit()
 
-    return jsonify({}), HTTP_204_NO_CONTENT
+    return jsonify({}), HTTP_200_OK

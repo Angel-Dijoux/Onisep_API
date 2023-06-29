@@ -7,7 +7,6 @@ from flasgger import swag_from
 from src.constants.http_status_codes import (
     HTTP_200_OK,
     HTTP_201_CREATED,
-    HTTP_204_NO_CONTENT,
     HTTP_400_BAD_REQUEST,
     HTTP_404_NOT_FOUND,
     HTTP_409_CONFLICT,
@@ -70,4 +69,4 @@ def remove_favori(id: int) -> Tuple[Response, int] | HTTPException:
     db.session.delete(favori)
     db.session.commit()
 
-    return jsonify({}), HTTP_204_NO_CONTENT
+    return jsonify({}), HTTP_200_OK
