@@ -1,11 +1,13 @@
 from dataclasses import dataclass
 from src import db
+from src.models.base_model import BaseModel
+
 
 # Create User row
 
 
 @dataclass
-class User(db.Model):
+class User(BaseModel):
     __tablename__ = "user"
 
     id: int
@@ -19,6 +21,3 @@ class User(db.Model):
     password = db.Column(db.Text(), nullable=False)
     profile_pic_url = db.Column(db.Text)
     favoris = db.relationship("Favori", backref="user")
-
-    def __repr__(self) -> str:
-        return "User>>> {self.username}"
