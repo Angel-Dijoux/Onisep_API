@@ -36,7 +36,6 @@ def register() -> Tuple[Response, int] | HTTPException:
     data = request.json
     if data is not None:
         username = data.get("username")
-        name = data.get("name")
         email = data.get("email")
         password = data.get("password")
 
@@ -51,9 +50,6 @@ def register() -> Tuple[Response, int] | HTTPException:
             abort(
                 HTTP_400_BAD_REQUEST, "Username shloud be alphanumeric, also no spaces"
             )
-        # Verify if name have alphanumeric characters or space
-        if not name.isalnum() or " " in name:
-            abort(HTTP_400_BAD_REQUEST, "Name shloud be alphanumeric, also no spaces")
         # Verify with "validators" if email is valid
         if not validators.email(email):
             abort(HTTP_409_CONFLICT, "Email is not valid")
@@ -66,7 +62,7 @@ def register() -> Tuple[Response, int] | HTTPException:
         # Hash password
         pwd_hash = generate_password_hash(password)
 
-        user = User(username=username, password=pwd_hash, email=email, name=name)
+        user = User(username=username, password=pwd_hash, email=email)
         db.session.add(user)
         db.session.commit()
 
@@ -166,7 +162,6 @@ def edit_user() -> Tuple[Response, int] | HTTPException:
 
     if data is not None:
         username = data.get("username", user.username)
-        name = data.get("name", user.name)
         pdp_url = data.get("pdp_url", user.pdp_url)
         email = data.get("email", user.email)
         password = data.get("password")
@@ -184,11 +179,6 @@ def edit_user() -> Tuple[Response, int] | HTTPException:
                 errors["username"] = "Username is taken"
             else:
                 user.username = username
-        if name != user.name:
-            if not name.isalnum() or " " in name:
-                errors["name"] = "Name should be alphanumeric, also no spaces"
-            else:
-                user.name = name
         if pdp_url != user.pdp_url:
             user.pdp_url = pdp_url
 

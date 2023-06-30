@@ -12,7 +12,6 @@ parameters:
       required:
         - "email"
         - "password"
-        - "name"
         - "usermame"
       properties:
         email:
@@ -22,9 +21,6 @@ parameters:
           type: "string"
           format: password
           example: "********"
-        name:
-          type: "name"
-          example: "myname"
         username:
           type: "username"
           example: "Jojo"
