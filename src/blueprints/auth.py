@@ -21,6 +21,7 @@ from src.constants.http_status_codes import (
 from src import db
 from src.models import User, Favori
 
+import re
 from typing import Tuple
 
 
@@ -39,17 +40,8 @@ def register() -> Tuple[Response, int] | HTTPException:
         email = data.get("email")
         password = data.get("password")
 
-        # Verify if password is large enought
-        if len(password) < 6:
-            abort(HTTP_400_BAD_REQUEST, "Password is too short")
-        # Verify if username is large enought
-        if len(username) < 3:
-            abort(HTTP_400_BAD_REQUEST, "Username is too short")
-        # Verify if username have alphanumeric characters or space
-        if not username.isalnum() or " " in username:
-            abort(
-                HTTP_400_BAD_REQUEST, "Username shloud be alphanumeric, also no spaces"
-            )
+        if len(password) < 6 or not re.match(r"^[a-zA-Z0-9]{3,20}$", username):
+            abort(HTTP_400_BAD_REQUEST, "Invalid password or username")
         # Verify with "validators" if email is valid
         if not validators.email(email):
             abort(HTTP_409_CONFLICT, "Email is not valid")

@@ -48,7 +48,11 @@ def post_favori_by_user_id() -> Tuple[Response, int] | HTTPException:
 @swag_from("../docs/favoris/getFavoris.yaml")
 def get_favoris_by_user_id() -> Tuple[Response, int]:
     current_user = get_jwt_identity()
-    favoris = Favori.query.filter_by(request_user_id=current_user).all()
+    favoris = (
+        Favori.query.filter(Favori.request_user_id == current_user)
+        .order_by(Favori.created_at.asc())
+        .all()
+    )
     return jsonify({"size": len(favoris), "results": favoris}), HTTP_200_OK
 
 
