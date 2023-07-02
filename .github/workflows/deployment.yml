@@ -1,6 +1,9 @@
 name: Deployment
 
-on: [push]
+on:
+  push:
+    branches:
+      - main
 
 env:
   MARIADB_ROOT_PASSWORD: ${{ secrets.MARIADB_ROOT_PASSWORD }}
@@ -15,11 +18,11 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
-    # - name: Stop running Docker container
-    #   run: docker stop api
-    # - name: remove container
-    #   run: docker rm api
-    # - name: Remove previous Docker image
-    #   run: docker rmi onisep_api-api:latest
+    - name: Stop running Docker container
+      run: docker stop api
+    - name: remove container
+      run: docker rm api
+    - name: Remove previous Docker image
+      run: docker rmi onisep_api-api:latest
     - name: Build and Run Docker container
       run: docker-compose up -d

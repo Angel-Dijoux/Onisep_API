@@ -8,7 +8,6 @@ __pycache__/
 #Ignore variable env
 .flaskenv
 .dockerignore
-Dockerfile
 .env
 
 #Ignore db local file 
