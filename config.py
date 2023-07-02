@@ -29,7 +29,7 @@ class Config(object):
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = get_dev_db_uri()
+    SQLALCHEMY_DATABASE_URI = get_prod_db_uri()
 
 
 class ProductionConfig(Config):

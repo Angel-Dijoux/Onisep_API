@@ -7,7 +7,6 @@ from flasgger import swag_from
 from src.constants.http_status_codes import (
     HTTP_200_OK,
     HTTP_201_CREATED,
-    HTTP_204_NO_CONTENT,
     HTTP_400_BAD_REQUEST,
     HTTP_404_NOT_FOUND,
     HTTP_409_CONFLICT,
@@ -27,6 +26,7 @@ def post_favori_by_user_id() -> Tuple[Response, int] | HTTPException:
     current_user = get_jwt_identity()
     # Collect informations
     favori_data = request.get_json()
+    favori_data.pop("domainesous-domaine", None)
     if not validators.url(favori_data.get("url_et_id_onisep", "")):
         abort(HTTP_400_BAD_REQUEST, "Enter valid url")
 
@@ -49,11 +49,28 @@ def post_favori_by_user_id() -> Tuple[Response, int] | HTTPException:
 @swag_from("../docs/favoris/getFavoris.yaml")
 def get_favoris_by_user_id() -> Tuple[Response, int]:
     current_user = get_jwt_identity()
-    favoris = Favori.query.filter_by(request_user_id=current_user).all()
+    favoris = (
+        Favori.query.filter(Favori.request_user_id == current_user)
+        .order_by(Favori.created_at.asc())
+        .all()
+    )
     return jsonify({"size": len(favoris), "results": favoris}), HTTP_200_OK
 
 
 # Remove_favoris function need JWT token and delete favoris for this user
+
+
+@favoris.route("/favori_ids")
+@jwt_required()
+def get_favoris_ids() -> Tuple[Response, int]:
+    current_user = get_jwt_identity()
+    result = (
+        Favori.query.with_entities(Favori.url_et_id_onisep, Favori.id)
+        .filter(Favori.request_user_id == current_user)
+        .all()
+    )
+    favori_data = [{"id": row.id, "url": row.url_et_id_onisep} for row in result]
+    return jsonify({"favori_ids": favori_data}), HTTP_200_OK
 
 
 @favoris.delete("/<int:id>")
@@ -70,4 +87,4 @@ def remove_favori(id: int) -> Tuple[Response, int] | HTTPException:
     db.session.delete(favori)
     db.session.commit()
 
-    return jsonify({}), HTTP_204_NO_CONTENT
+    return jsonify({}), HTTP_200_OK

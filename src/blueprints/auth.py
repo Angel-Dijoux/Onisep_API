@@ -13,7 +13,6 @@ from flasgger import swag_from
 from src.constants.http_status_codes import (
     HTTP_200_OK,
     HTTP_201_CREATED,
-    HTTP_204_NO_CONTENT,
     HTTP_400_BAD_REQUEST,
     HTTP_401_UNAUTHORIZED,
     HTTP_404_NOT_FOUND,
@@ -22,6 +21,7 @@ from src.constants.http_status_codes import (
 from src import db
 from src.models import User, Favori
 
+import re
 from typing import Tuple
 
 
@@ -37,24 +37,11 @@ def register() -> Tuple[Response, int] | HTTPException:
     data = request.json
     if data is not None:
         username = data.get("username")
-        name = data.get("name")
         email = data.get("email")
         password = data.get("password")
 
-        # Verify if password is large enought
-        if len(password) < 6:
-            abort(HTTP_400_BAD_REQUEST, "Password is too short")
-        # Verify if username is large enought
-        if len(username) < 3:
-            abort(HTTP_400_BAD_REQUEST, "Username is too short")
-        # Verify if username have alphanumeric characters or space
-        if not username.isalnum() or " " in username:
-            abort(
-                HTTP_400_BAD_REQUEST, "Username shloud be alphanumeric, also no spaces"
-            )
-        # Verify if name have alphanumeric characters or space
-        if not name.isalnum() or " " in name:
-            abort(HTTP_400_BAD_REQUEST, "Name shloud be alphanumeric, also no spaces")
+        if len(password) < 6 or not re.match(r"^[a-zA-Z0-9]{3,20}$", username):
+            abort(HTTP_400_BAD_REQUEST, "Invalid password or username")
         # Verify with "validators" if email is valid
         if not validators.email(email):
             abort(HTTP_409_CONFLICT, "Email is not valid")
@@ -67,7 +54,7 @@ def register() -> Tuple[Response, int] | HTTPException:
         # Hash password
         pwd_hash = generate_password_hash(password)
 
-        user = User(username=username, password=pwd_hash, email=email, name=name)
+        user = User(username=username, password=pwd_hash, email=email)
         db.session.add(user)
         db.session.commit()
 
@@ -167,7 +154,6 @@ def edit_user() -> Tuple[Response, int] | HTTPException:
 
     if data is not None:
         username = data.get("username", user.username)
-        name = data.get("name", user.name)
         pdp_url = data.get("pdp_url", user.pdp_url)
         email = data.get("email", user.email)
         password = data.get("password")
@@ -185,11 +171,6 @@ def edit_user() -> Tuple[Response, int] | HTTPException:
                 errors["username"] = "Username is taken"
             else:
                 user.username = username
-        if name != user.name:
-            if not name.isalnum() or " " in name:
-                errors["name"] = "Name should be alphanumeric, also no spaces"
-            else:
-                user.name = name
         if pdp_url != user.pdp_url:
             user.pdp_url = pdp_url
 
@@ -251,4 +232,4 @@ def remove_user() -> Tuple[Response, int] | HTTPException:
     db.session.delete(user)
     db.session.commit()
 
-    return jsonify({}), HTTP_204_NO_CONTENT
+    return jsonify({}), HTTP_200_OK

@@ -1,9 +1,10 @@
 from dataclasses import dataclass
 from src import db
+from src.models.base_model import BaseModel
 
 
 @dataclass
-class Favori(db.Model):
+class Favori(BaseModel):
     __tablename__ = "favori"
 
     id: int
@@ -35,6 +36,3 @@ class Favori(db.Model):
     tutelle = db.Column(db.Text)
     url_et_id_onisep = db.Column(db.Text, nullable=False)
     request_user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-
-    def __repr__(self) -> str:
-        return "Favori>>> {self.onisep_url}"
