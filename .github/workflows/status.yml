@@ -1,9 +1,8 @@
 name: Check API Availability
 
 on: 
-  push
-#   schedule:
-#     - cron: '0 */8 * * *'  # Runs every 8 hours
+  schedule:
+    - cron: '0 */8 * * *'  # Runs every 8 hours
 
 jobs:
   check-api:
