@@ -13,7 +13,6 @@ from src.constants.http_status_codes import (
 )
 from src import db
 from src.models import Favori
-import base64
 
 from typing import Tuple
 
