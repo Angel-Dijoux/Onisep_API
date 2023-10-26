@@ -1,0 +1,45 @@
+[tool.isort]
+profile = "black"
+
+[tool.black]
+py36 = true
+include = '\.pyi?$'
+exclude = '''
+/(
+        \.git
+        | \.hg
+        | \.mypy_cache
+        | \.tox
+        | \.venv
+        | _build
+        | buck-out
+        | build
+        | dist
+
+        # The following are specific to Black, you probably don't want those.
+        | blib2to3
+        | tests/data
+    )/
+'''
+
+[tool.ruff]
+ignore = ["E501"]
+line-length = 89
+select = [
+    "B",
+    "B9",
+    "C",
+    "E",
+    "F",
+    "W",
+]
+target-version = "py39"
+
+[tool.ruff.mccabe]
+max-complexity = 18
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = [
+    "F401",
+    "F403",
+]

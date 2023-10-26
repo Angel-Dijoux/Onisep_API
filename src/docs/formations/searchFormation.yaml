@@ -1,0 +1,33 @@
+Rechercher plusieurs formations ONISEP
+---
+
+tags:
+  - Formations
+
+post:
+  parameters:
+    - name: search_formations
+      description: Rechercher des Formations
+      in: body
+      required: true
+      schema:
+        type: object
+        required:
+          - "query"
+          - "limit"
+          - "offset"
+        properties:
+          query: 
+            type: "String"
+            example: "sio"
+          limit: 
+            type: integer
+            example: 10
+          offset:
+            required: false
+            type: integer
+            example: 10
+
+responses:
+  201:
+    description: La recherche s'est bien passée.
