@@ -13,8 +13,8 @@ from src.constants.http_status_codes import (
 formations = Blueprint("formations", __name__, url_prefix="/api/v1/formations")
 
 
-def filter_by_link(formations: list[dict[str, Any]], id: str) -> dict[str, Any]:
-    filtered_list = list(filter(lambda f: f["identifiant"] == id, formations))
+def filter_by_link(formations: list[dict[str, Any]], for_id: str) -> dict[str, Any]:
+    filtered_list = list(filter(lambda f: f["identifiant"] == for_id, formations))
     return filtered_list[0] if filtered_list else {}
 
 
@@ -25,6 +25,6 @@ def get_formation_by_id(id: str) -> Tuple[Response, int] | HTTPException:
         with open("assets/formation/data.json", "r") as json_file:
             result = filter_by_link(json.load(json_file)["formations"]["formation"], id)
         return jsonify(result), HTTP_200_OK if len(result) > 0 else HTTP_200_OK
-    except Exception:
-        print("Error in get_formation_by_id : ", Exception)
+    except Exception as e:
+        print("Error in get_formation_by_id : ", str(e))
         abort(HTTP_500_INTERNAL_SERVER_ERROR)

@@ -25,7 +25,7 @@ def extract_xml(response: requests.Response) -> dict:
 def convert_to_xml_to_json(xml: dict) -> bool:
     json_data = json.dumps(xml)
     filename = "data.json"
-    path = "assets/formation/"
+    path = "../assets/formation/"
     try:
         with open(path + filename, "w") as json_file:
             json_file.write(json_data)
@@ -35,8 +35,8 @@ def convert_to_xml_to_json(xml: dict) -> bool:
                 )
             )
             return True
-    except Exception:
-        logging.debug(f"Error in convert : {Exception}")
+    except Exception as e:
+        logging.debug(f"Error in convert : {str(e)}")
         return False
 
 
