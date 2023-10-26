@@ -15,6 +15,7 @@ mysql-connector-python = "==8.0.29"
 flask-migrate = "==3.1.0"
 xmltodict = "==0.13.0"
 secure = "==0.3.0"
+loguru = "*"
 
 [dev-packages]
 
