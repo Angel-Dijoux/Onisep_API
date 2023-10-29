@@ -1,10 +1,10 @@
+from dataclasses import dataclass
 import requests
 from src.business_logic.formation import ONISEP_URL
 from src.business_logic.formation.scrap.types import (
     Facet,
-    Formation,
-    SearchedFormations,
 )
+from src.models.formation import Formation
 
 # Idéo-Formations initiales en France
 # https://opendata.onisep.fr/data/5fa591127f501/2-ideo-formations-initiales-en-france.htm
@@ -16,6 +16,12 @@ def _get_data(params: str) -> dict:
     response = requests.get(url)
     if response.status_code == 200:
         return response.json()
+
+
+@dataclass
+class SearchedFormations:
+    total: int
+    formations: list[Formation]
 
 
 def search_formations(query: str, limit: int, offset: int = None) -> SearchedFormations:
@@ -38,7 +44,7 @@ def search_formations(query: str, limit: int, offset: int = None) -> SearchedFor
         for formation in data["results"]
     ]
 
-    return {"total": data["total"], "formations": filtered_formations}
+    return SearchedFormations(data["total"], filtered_formations)
 
 
 def get_libelle_type_formation(query: str) -> list[Facet]:

@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request, Response, abort
+from sqlalchemy import and_, exists
 from werkzeug.exceptions import HTTPException
 import validators
 from flask_jwt_extended import get_jwt_identity, jwt_required
@@ -16,7 +17,16 @@ from src.models import UserFavori
 
 from typing import Tuple
 
+from src.models.formation import Formation
+
 favoris = Blueprint("favoris", __name__, url_prefix="/api/v1/favoris")
+
+
+def _create_new_formation(favori: dict) -> Formation:
+    formation = Formation(**favori)
+    db.session.add(formation)
+    db.session.flush()
+    return formation
 
 
 @favoris.route("/", methods=["POST"])
@@ -24,24 +34,35 @@ favoris = Blueprint("favoris", __name__, url_prefix="/api/v1/favoris")
 @swag_from("../docs/favoris/postFavoris.yaml")
 def post_favori_by_user_id() -> Tuple[Response, int] | HTTPException:
     current_user = get_jwt_identity()
-    # Collect informations
-    favori_data = request.get_json()
-    favori_data.pop("domainesous-domaine", None)
-    if not validators.url(favori_data.get("url_et_id_onisep", "")):
-        abort(HTTP_400_BAD_REQUEST, "Enter valid url")
 
-    if UserFavori.query.filter_by(
-        request_user_id=current_user,
-        url_et_id_onisep=favori_data.get("url_et_id_onisep", ""),
-    ).first():
+    favori_data = request.get_json()
+    url = favori_data.get("url", "")
+
+    if not validators.url(url):
+        abort(HTTP_400_BAD_REQUEST, "Enter a valid URL")
+
+    formation = Formation.query.filter(Formation.url == url).first()
+
+    if formation is None:
+        formation = _create_new_formation(favori_data)
+
+    favori_exist = db.session.query(
+        exists().where(
+            and_(
+                UserFavori.user_id == current_user,
+                UserFavori.formation_id == formation.id,
+            )
+        )
+    ).scalar()
+
+    if favori_exist:
         abort(HTTP_409_CONFLICT, "URL already exists")
-    favori = UserFavori(**favori_data, request_user_id=current_user)
+
+    favori = UserFavori(formation_id=formation.id, user_id=current_user)
     db.session.add(favori)
     db.session.commit()
-    return (
-        jsonify(favori),
-        HTTP_201_CREATED,
-    )
+
+    return jsonify(favori), HTTP_201_CREATED
 
 
 @favoris.route("/", methods=["GET"])

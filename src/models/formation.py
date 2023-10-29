@@ -1,18 +1,28 @@
+import uuid
 from dataclasses import dataclass
+from email.policy import default
 from enum import unique
 from typing import Callable
 
-from cuid2 import cuid_wrapper
+from cuid2 import Cuid, cuid_wrapper
+from sqlalchemy import UUID
 
 from src import db
 from src.models.base_model import BaseModel
+from src.models.helpers.UUIDType import UUIDType
+
+
+def default_uuid5():
+    namespace = uuid.uuid4()
+    name = "com.onisep.app"
+    return uuid.uuid5(namespace, name)
 
 
 @dataclass
 class Formation(BaseModel):
     __tablename__ = "formation"
 
-    id: str
+    id: UUIDType
     code_nsf: int
     type: str
     libelle: str
@@ -22,11 +32,9 @@ class Formation(BaseModel):
     niveau_de_sortie: str
     duree: str
 
-    cuid_generator: Callable[[], str] = cuid_wrapper()
-
     id = db.Column(
-        db.String(36),
-        default=cuid_generator(),
+        UUIDType,
+        default=default_uuid5,
         primary_key=True,
     )
     code_nsf = db.Column(db.Integer, nullable=False)
