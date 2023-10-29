@@ -1,4 +1,4 @@
-"""empty message
+"""Add UUID in formation table.
 
 Revision ID: ee56a7eaab4a
 Revises: 16c8bc08a922

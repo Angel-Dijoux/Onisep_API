@@ -1,16 +1,15 @@
 from dataclasses import dataclass
-from typing import Callable
 
-from cuid2 import cuid_wrapper
-from sqlalchemy import UUID
 from src import db
 from src.models.base_model import BaseModel
 from src.models.helpers.UUIDType import UUIDType
+from sqlalchemy_serializer import SerializerMixin
 
 
-@dataclass
-class UserFavori(BaseModel):
+class UserFavori(BaseModel, SerializerMixin):
     __tablename__ = "user_favori"
+
+    serialize_only = "formation_id"
 
     formation_id = db.Column(
         UUIDType,

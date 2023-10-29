@@ -1,11 +1,5 @@
 import uuid
 from dataclasses import dataclass
-from email.policy import default
-from enum import unique
-from typing import Callable
-
-from cuid2 import Cuid, cuid_wrapper
-from sqlalchemy import UUID
 
 from src import db
 from src.models.base_model import BaseModel
