@@ -34,6 +34,24 @@ def upgrade():
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint("url"),
     )
+    op.execute(
+        """
+        INSERT INTO formation (id, code_nsf, type, libelle, tutelle, url, domain, niveau_de_sortie, duree, created_at, updated_at)
+        SELECT
+            UUID(),
+            f.code_nsf,
+            f.sigle_type_formation,
+            f.libelle_formation_principal,
+            f.tutelle,
+            f.url_et_id_onisep,
+            "NULL",
+            f.niveau_de_sortie_indicatif,
+            f.duree,
+            f.created_at,
+            f.updated_at
+        FROM favori f;
+        """
+    )
     # ### end Alembic commands ###
 
 

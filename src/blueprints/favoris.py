@@ -12,7 +12,7 @@ from src.constants.http_status_codes import (
     HTTP_409_CONFLICT,
 )
 from src import db
-from src.models import Favori
+from src.models import UserFavori
 
 from typing import Tuple
 
@@ -30,12 +30,12 @@ def post_favori_by_user_id() -> Tuple[Response, int] | HTTPException:
     if not validators.url(favori_data.get("url_et_id_onisep", "")):
         abort(HTTP_400_BAD_REQUEST, "Enter valid url")
 
-    if Favori.query.filter_by(
+    if UserFavori.query.filter_by(
         request_user_id=current_user,
         url_et_id_onisep=favori_data.get("url_et_id_onisep", ""),
     ).first():
         abort(HTTP_409_CONFLICT, "URL already exists")
-    favori = Favori(**favori_data, request_user_id=current_user)
+    favori = UserFavori(**favori_data, request_user_id=current_user)
     db.session.add(favori)
     db.session.commit()
     return (
@@ -50,8 +50,8 @@ def post_favori_by_user_id() -> Tuple[Response, int] | HTTPException:
 def get_favoris_by_user_id() -> Tuple[Response, int]:
     current_user = get_jwt_identity()
     favoris = (
-        Favori.query.filter(Favori.request_user_id == current_user)
-        .order_by(Favori.created_at.asc())
+        UserFavori.query.filter(UserFavori.request_user_id == current_user)
+        .order_by(UserFavori.created_at.asc())
         .all()
     )
     return jsonify({"size": len(favoris), "results": favoris}), HTTP_200_OK
@@ -65,8 +65,8 @@ def get_favoris_by_user_id() -> Tuple[Response, int]:
 def get_favoris_ids() -> Tuple[Response, int]:
     current_user = get_jwt_identity()
     result = (
-        Favori.query.with_entities(Favori.url_et_id_onisep, Favori.id)
-        .filter(Favori.request_user_id == current_user)
+        UserFavori.query.with_entities(UserFavori.url_et_id_onisep, UserFavori.id)
+        .filter(UserFavori.request_user_id == current_user)
         .all()
     )
     favori_data = [{"id": row.id, "url": row.url_et_id_onisep} for row in result]
@@ -79,7 +79,7 @@ def get_favoris_ids() -> Tuple[Response, int]:
 def remove_favori(id: int) -> Tuple[Response, int] | HTTPException:
     current_user = get_jwt_identity()
 
-    favori = Favori.query.filter_by(request_user_id=current_user, id=id).first()
+    favori = UserFavori.query.filter_by(request_user_id=current_user, id=id).first()
 
     if not favori:
         abort(HTTP_404_NOT_FOUND, "Favoris not found")

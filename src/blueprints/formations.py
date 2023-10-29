@@ -12,7 +12,7 @@ from src.business_logic.formation.scrap.get_formation import (
 from src.constants.http_status_codes import (
     HTTP_200_OK,
 )
-from src.models.favori import Favori
+from src.models.user_favori import UserFavori
 from src.models.user import User
 
 from src import db
@@ -42,8 +42,8 @@ def get_formation_by_id(id: str) -> Tuple[Response, int] | HTTPException:
     db.session.add(new_user)
     db.session.flush()
 
-    # Create a Favori object
-    new_favori = Favori(
+    # Create a UserFavori object
+    new_favori = UserFavori(
         code_nsf="123",
         sigle_type_formation="ABC",
         libelle_type_formation="Type ABC",
@@ -56,7 +56,7 @@ def get_formation_by_id(id: str) -> Tuple[Response, int] | HTTPException:
         libelle_niveau_de_certification="Certification ABC",
         tutelle="Example Tutelle",
         url_et_id_onisep="https://example.com/2",
-        request_user_id=new_user.id,  # Assign the user object to the Favori
+        request_user_id=new_user.id,  # Assign the user object to the UserFavori
     )
     db.session.add(new_favori)
     db.session.commit()

@@ -20,4 +20,4 @@ class User(BaseModel):
     email = db.Column(db.String(200), unique=True, nullable=False)
     password = db.Column(db.Text(), nullable=False)
     profile_pic_url = db.Column(db.Text)
-    favoris = db.relationship("Favori", backref="user", lazy="dynamic")
+    favoris = db.relationship("UserFavori", backref="user", lazy="dynamic")
