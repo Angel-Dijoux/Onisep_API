@@ -19,7 +19,7 @@ from src.constants.http_status_codes import (
     HTTP_409_CONFLICT,
 )
 from src import db
-from src.models import User, Favori
+from src.models import User, UserFavori
 
 import re
 from typing import Tuple
@@ -212,8 +212,8 @@ def edit_user() -> Tuple[Response, int] | HTTPException:
 
 
 def remove_favoris(user_id: int) -> None:
-    favoris = Favori.query.filter_by(request_user_id=user_id).all()
-    list(map(lambda f: db.session.delete(f), favoris))
+    favoris = UserFavori.query.filter(UserFavori.user_id == user_id).all()
+    [db.session.delete(f) for f in favoris]
     db.session.commit()
 
 

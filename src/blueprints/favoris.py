@@ -1,9 +1,14 @@
-from flask import Blueprint, jsonify, request, Response, abort
-from werkzeug.exceptions import HTTPException
-import validators
-from flask_jwt_extended import get_jwt_identity, jwt_required
-from flasgger import swag_from
+from typing import Tuple
+from uuid import UUID
 
+import validators
+from flasgger import swag_from
+from flask import Blueprint, Response, abort, jsonify, request
+from flask_jwt_extended import get_jwt_identity, jwt_required
+from sqlalchemy import and_, exists
+from werkzeug.exceptions import HTTPException
+
+from src import db
 from src.constants.http_status_codes import (
     HTTP_200_OK,
     HTTP_201_CREATED,
@@ -11,12 +16,17 @@ from src.constants.http_status_codes import (
     HTTP_404_NOT_FOUND,
     HTTP_409_CONFLICT,
 )
-from src import db
-from src.models import Favori
-
-from typing import Tuple
+from src.models import UserFavori
+from src.models.formation import Formation
 
 favoris = Blueprint("favoris", __name__, url_prefix="/api/v1/favoris")
+
+
+def _create_new_formation(favori: dict) -> Formation:
+    formation = Formation(**favori)
+    db.session.add(formation)
+    db.session.flush()
+    return formation
 
 
 @favoris.route("/", methods=["POST"])
@@ -24,24 +34,35 @@ favoris = Blueprint("favoris", __name__, url_prefix="/api/v1/favoris")
 @swag_from("../docs/favoris/postFavoris.yaml")
 def post_favori_by_user_id() -> Tuple[Response, int] | HTTPException:
     current_user = get_jwt_identity()
-    # Collect informations
-    favori_data = request.get_json()
-    favori_data.pop("domainesous-domaine", None)
-    if not validators.url(favori_data.get("url_et_id_onisep", "")):
-        abort(HTTP_400_BAD_REQUEST, "Enter valid url")
 
-    if Favori.query.filter_by(
-        request_user_id=current_user,
-        url_et_id_onisep=favori_data.get("url_et_id_onisep", ""),
-    ).first():
+    favori_data = request.get_json()
+    url = favori_data.get("url", "")
+
+    if not validators.url(url):
+        abort(HTTP_400_BAD_REQUEST, "Enter a valid URL")
+
+    formation = Formation.query.filter(Formation.url == url).first()
+
+    if formation is None:
+        formation = _create_new_formation(favori_data)
+
+    favori_exist = db.session.query(
+        exists().where(
+            and_(
+                UserFavori.user_id == current_user,
+                UserFavori.formation_id == formation.id,
+            )
+        )
+    ).scalar()
+
+    if favori_exist:
         abort(HTTP_409_CONFLICT, "URL already exists")
-    favori = Favori(**favori_data, request_user_id=current_user)
+
+    favori = UserFavori(formation_id=formation.id, user_id=current_user)
     db.session.add(favori)
     db.session.commit()
-    return (
-        jsonify(favori),
-        HTTP_201_CREATED,
-    )
+
+    return jsonify(favori), HTTP_201_CREATED
 
 
 @favoris.route("/", methods=["GET"])
@@ -50,11 +71,16 @@ def post_favori_by_user_id() -> Tuple[Response, int] | HTTPException:
 def get_favoris_by_user_id() -> Tuple[Response, int]:
     current_user = get_jwt_identity()
     favoris = (
-        Favori.query.filter(Favori.request_user_id == current_user)
-        .order_by(Favori.created_at.asc())
+        db.session.query(Formation)
+        .join(UserFavori, UserFavori.formation_id == Formation.id)
+        .filter(UserFavori.user_id == current_user)
         .all()
     )
-    return jsonify({"size": len(favoris), "results": favoris}), HTTP_200_OK
+
+    result = [favori.to_dict() for favori in favoris]
+    response_data = {"size": len(favoris), "results": result}
+
+    return jsonify(response_data), HTTP_200_OK
 
 
 # Remove_favoris function need JWT token and delete favoris for this user
@@ -64,22 +90,26 @@ def get_favoris_by_user_id() -> Tuple[Response, int]:
 @jwt_required()
 def get_favoris_ids() -> Tuple[Response, int]:
     current_user = get_jwt_identity()
-    result = (
-        Favori.query.with_entities(Favori.url_et_id_onisep, Favori.id)
-        .filter(Favori.request_user_id == current_user)
+    favoris = (
+        db.session.query(Formation.url, Formation.id)
+        .join(UserFavori, UserFavori.formation_id == Formation.id)
+        .filter(UserFavori.user_id == current_user)
         .all()
     )
-    favori_data = [{"id": row.id, "url": row.url_et_id_onisep} for row in result]
+    favori_data = [{"id": row.id, "url": row.url} for row in favoris]
     return jsonify({"favori_ids": favori_data}), HTTP_200_OK
 
 
-@favoris.delete("/<int:id>")
+@favoris.delete("/<string:id>")
 @jwt_required()
 @swag_from("../docs/favoris/remove.yaml")
-def remove_favori(id: int) -> Tuple[Response, int] | HTTPException:
+def remove_favori(id: str) -> Tuple[Response, int] | HTTPException:
     current_user = get_jwt_identity()
 
-    favori = Favori.query.filter_by(request_user_id=current_user, id=id).first()
+    favori = UserFavori.query.filter(
+        UserFavori.user_id == current_user,
+        UserFavori.formation_id == UUID(id),
+    ).first()
 
     if not favori:
         abort(HTTP_404_NOT_FOUND, "Favoris not found")

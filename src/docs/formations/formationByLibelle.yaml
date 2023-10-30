@@ -1,0 +1,24 @@
+Nombre de formations par libelle
+---
+
+tags:
+  - Formations
+
+post:
+  parameters:
+    - name: formations_by_libelle
+      description: Formations par libelle
+      in: body
+      required: true
+      schema:
+        type: object
+        required:
+          - "query"
+        properties:
+          query: 
+            required: true
+            type: "String"
+            example: "sio"
+responses:
+  201:
+    description: La recherche s'est bien passée.

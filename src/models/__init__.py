@@ -1,4 +1,5 @@
+from src.models.formation import Formation
 from .user import User
-from .favori import Favori
+from .user_favori import UserFavori
 
-models = [User, Favori]
+models = [User, UserFavori, Formation]

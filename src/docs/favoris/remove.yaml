@@ -19,7 +19,7 @@ delete:
       description: Supprimer un favori.
       in: path
       required: true
-      type: integer
+      type: string
 
 responses:
   204:

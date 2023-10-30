@@ -1,0 +1,22 @@
+{
+  "editor.formatOnSave": true,
+  "editor.formatOnType": false,
+  "editor.formatOnPaste": true,
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[python]": {
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll": true,
+      "source.organizeImports": true
+    }
+  },
+  "python.formatting.provider": "black",
+  "python.formatting.blackArgs": [
+    "--config",
+    "${workspaceFolder}/pyproject.toml"
+  ],
+  "python.analysis.extraPaths": ["backend_flask"],
+  "python.analysis.autoImportCompletions": true
+}

@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from src import db
 from src.models.base_model import BaseModel
+from src.models.user_favori import UserFavori
 
 
 # Create User row
@@ -20,4 +21,12 @@ class User(BaseModel):
     email = db.Column(db.String(200), unique=True, nullable=False)
     password = db.Column(db.Text(), nullable=False)
     profile_pic_url = db.Column(db.Text)
-    favoris = db.relationship("Favori", backref="user")
+
+    favoris = db.relationship(
+        "UserFavori",
+        secondary=UserFavori.__tablename__,
+        primaryjoin="User.id == UserFavori.user_id",
+        secondaryjoin="UserFavori.formation_id == Formation.id",
+        back_populates="users",
+        viewonly=True,
+    )
