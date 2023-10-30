@@ -9,7 +9,7 @@ class Facet:
 
 @dataclass
 class Formation:
-    code_nsf: str
+    code_nsf: int
     type: str
     libelle: str
     tutelle: str

@@ -1,5 +1,4 @@
 import uuid
-from dataclasses import dataclass
 
 from src import db
 from src.models.base_model import BaseModel
@@ -12,19 +11,8 @@ def default_uuid5():
     return uuid.uuid5(namespace, name)
 
 
-@dataclass
 class Formation(BaseModel):
     __tablename__ = "formation"
-
-    id: UUIDType
-    code_nsf: int
-    type: str
-    libelle: str
-    tutelle: str
-    url: str
-    domain: str
-    niveau_de_sortie: str
-    duree: str
 
     id = db.Column(
         UUIDType,
