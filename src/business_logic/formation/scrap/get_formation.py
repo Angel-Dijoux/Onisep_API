@@ -27,7 +27,7 @@ def search_formations(query: str, limit: int, offset: int = None) -> SearchedFor
 
     formated_formations = [
         Formation(
-            int(formation["code_nsf"]),
+            int(formation["code_nsf"] or 0),
             formation["sigle_type_formation"] or formation["libelle_type_formation"],
             formation["libelle_formation_principal"],
             formation["tutelle"],
