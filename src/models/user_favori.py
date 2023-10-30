@@ -1,5 +1,3 @@
-from dataclasses import dataclass
-
 from src import db
 from src.models.base_model import BaseModel
 from src.models.helpers.UUIDType import UUIDType

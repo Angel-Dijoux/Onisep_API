@@ -6,7 +6,6 @@ Create Date: 2023-10-29 22:09:53.444244
 
 """
 from alembic import op
-import sqlalchemy as sa
 from sqlalchemy.dialects import mysql
 
 from src.models.helpers.UUIDType import UUIDType
