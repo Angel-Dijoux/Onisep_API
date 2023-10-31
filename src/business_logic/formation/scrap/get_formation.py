@@ -19,13 +19,8 @@ def _get_data(params: str) -> dict:
         return response.json()
 
 
-def search_formations(query: str, limit: int, offset: int = None) -> SearchedFormations:
-    params = f"/search?q={query}&size={limit}"
-    if offset:
-        params += f"&from={offset}"
-    data = _get_data(params)
-
-    formated_formations = [
+def _format_formations(data: list[dict]) -> list[Formation]:
+    return [
         Formation(
             int(formation["code_nsf"] or 0),
             formation["sigle_type_formation"] or formation["libelle_type_formation"],
@@ -36,8 +31,17 @@ def search_formations(query: str, limit: int, offset: int = None) -> SearchedFor
             formation["niveau_de_sortie_indicatif"],
             formation["duree"],
         )
-        for formation in data["results"]
+        for formation in data
     ]
+
+
+def search_formations(query: str, limit: int, offset: int = None) -> SearchedFormations:
+    params = f"/search?q={query}&size={limit}"
+    if offset:
+        params += f"&from={offset}"
+    data = _get_data(params)
+
+    formated_formations = _format_formations(data["results"])
 
     return SearchedFormations(data["total"], formated_formations)
 
@@ -46,3 +50,14 @@ def get_libelle_type_formation(query: str) -> list[Facet]:
     params = f"/search?q={query}"
     data = _get_data(params)
     return data["facets"]["libelle_type_formation"]
+
+
+def get_main_formations(limit: int = 10, offset: int = None) -> SearchedFormations:
+    params = f"/search?&size={limit}"
+    if offset:
+        params += f"&from={offset}"
+    data = _get_data(params)
+
+    formated_formations = _format_formations(data["results"])
+
+    return SearchedFormations(data["total"], formated_formations)

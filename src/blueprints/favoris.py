@@ -62,7 +62,7 @@ def post_favori_by_user_id() -> Tuple[Response, int] | HTTPException:
     db.session.add(favori)
     db.session.commit()
 
-    return jsonify(favori), HTTP_201_CREATED
+    return jsonify(favori.to_dict()), HTTP_201_CREATED
 
 
 @favoris.route("/", methods=["GET"])
