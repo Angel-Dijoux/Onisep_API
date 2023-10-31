@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 import requests
 from src.business_logic.formation import ONISEP_URL
 from src.business_logic.formation.scrap.types import (
