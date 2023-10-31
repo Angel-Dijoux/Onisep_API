@@ -20,7 +20,7 @@ def route_handler(
     blueprint: Blueprint, route: str, method: HttpMethod, swag_yaml: str = None
 ) -> Callable:
     def decorator(func: Callable) -> Callable:
-        @ swag_from(swag_yaml) if swag_yaml else lambda: None
+        @swag_from(swag_yaml if swag_yaml else lambda: None)
         def inner_wrapper(*args, **kwargs):
             try:
                 return jsonify(func(*args, **kwargs)), HTTP_200_OK
