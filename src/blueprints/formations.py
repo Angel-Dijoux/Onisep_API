@@ -2,6 +2,7 @@ import json
 from typing import Any, Tuple
 
 from flask import Blueprint, Response, request
+from flask_jwt_extended import get_jwt_identity, jwt_required
 from werkzeug.exceptions import HTTPException
 
 from src.blueprints.route_handler import HttpMethod, route_handler
@@ -49,12 +50,17 @@ def resolve_get_formation_by_id(id: str) -> Tuple[Response, int] | HTTPException
     HttpMethod.POST,
     "../docs/formations/searchFormation.yaml",
 )
+@jwt_required(optional=True)
 def resolve_get_search_formation() -> Tuple[Response, int] | HTTPException:
     post = request.get_json()
     query = post.get("query")
     limit = post.get("limit")
     offset = post.get("offset")
 
+    if get_jwt_identity():
+        limit = 4
+    else:
+        limit = 2
     return search_formations(query, limit, offset)
 
 

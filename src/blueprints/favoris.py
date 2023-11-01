@@ -9,6 +9,7 @@ from sqlalchemy import and_, exists
 from werkzeug.exceptions import HTTPException
 
 from src import db
+from src.business_logic.formation import get_formation_by_url
 from src.constants.http_status_codes import (
     HTTP_200_OK,
     HTTP_201_CREATED,
@@ -41,7 +42,7 @@ def post_favori_by_user_id() -> Tuple[Response, int] | HTTPException:
     if not validators.url(url):
         abort(HTTP_400_BAD_REQUEST, "Enter a valid URL")
 
-    formation = Formation.query.filter(Formation.url == url).first()
+    formation = get_formation_by_url(url)
 
     if formation is None:
         formation = _create_new_formation(favori_data)

@@ -26,6 +26,7 @@ template = {
             "description": 'JWT Authorization header using the Bearer scheme. Example: "Authorization: Bearer {token}"',
         }
     },
+    "security": [{"Bearer": []}],
 }
 
 swagger_config = {

@@ -1,10 +1,11 @@
 import requests
-from src.business_logic.formation import ONISEP_URL
+from src.business_logic.formation import HEADERS, ONISEP_URL
+from src.business_logic.formation.scrap.get_onisep_token import get_token
 from src.business_logic.formation.scrap.types import (
     Facet,
-    Formation,
     SearchedFormations,
 )
+from src.models.formation import Formation
 
 # Idéo-Formations initiales en France
 # https://opendata.onisep.fr/data/5fa591127f501/2-ideo-formations-initiales-en-france.htm
@@ -13,23 +14,25 @@ DATASET = "5fa591127f501"
 
 def _get_data(params: str) -> dict:
     url = ONISEP_URL + DATASET + params
-    response = requests.get(url)
+    response = requests.get(url, headers=HEADERS)
     if response.status_code == 200:
         return response.json()
+    raise Exception("Onisep API is down.", response.status_code)
 
 
 def _format_formations(data: list[dict]) -> list[Formation]:
     return [
         Formation(
-            int(formation["code_nsf"] or 0),
-            formation["sigle_type_formation"] or formation["libelle_type_formation"],
-            formation["libelle_formation_principal"],
-            formation["tutelle"],
-            formation["url_et_id_onisep"],
-            formation["domainesous-domaine"],
-            formation["niveau_de_sortie_indicatif"],
-            formation["duree"],
-        )
+            code_nsf=int(formation.get("code_nsf") or 0),
+            type=formation.get("sigle_type_formation")
+            or formation.get("libelle_type_formation"),
+            libelle=formation.get("libelle_formation_principal"),
+            tutelle=formation.get("tutelle"),
+            url=formation.get("url_et_id_onisep"),
+            domain=formation.get("domainesous-domaine"),
+            niveau_de_sortie=formation.get("niveau_de_sortie_indicatif"),
+            duree=formation.get("duree"),
+        ).to_dict()
         for formation in data
     ]
 
