@@ -1,6 +1,6 @@
 import requests
+
 from src.business_logic.formation import HEADERS, ONISEP_URL
-from src.business_logic.formation.scrap.get_onisep_token import get_token
 from src.business_logic.formation.scrap.types import (
     Facet,
     SearchedFormations,
