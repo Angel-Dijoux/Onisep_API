@@ -1,31 +1,35 @@
 name: Deployment
 
 on:
+  workflow_call:
   push:
     branches:
       - main
     paths-ignore:
-      - '.github/**'
-      - '.vscode/**'
+      - ".github/**"
+      - ".vscode/**"
 
 env:
   MARIADB_ROOT_PASSWORD: ${{ secrets.MARIADB_ROOT_PASSWORD }}
   DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
   DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
   SECRET_KEY: ${{ secrets.SECRET_KEY }}
+  ONISEP_EMAIL: ${{ secrets.ONISEP_EMAIL }}
+  ONISEP_PASSWORD: ${{ secrets.ONISEP_PASSWORD }}
+  ONISEP_APP_ID: ${{ secrets.ONISEP_APP_ID }}
 
 jobs:
   build:
     runs-on: self-hosted
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-    - name: Stop running Docker container
-      run: docker stop api
-    - name: remove container
-      run: docker rm api
-    - name: Remove previous Docker image
-      run: docker rmi onisep_api-api:latest
-    - name: Build and Run Docker container
-      run: docker-compose up -d
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Stop running Docker container
+        run: docker stop api
+      - name: remove container
+        run: docker rm api
+      - name: Remove previous Docker image
+        run: docker rmi onisep_api-api:latest
+      - name: Build and Run Docker container
+        run: docker-compose up -d

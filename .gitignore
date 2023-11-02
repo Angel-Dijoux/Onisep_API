@@ -12,3 +12,6 @@ __pycache__/
 
 #Ignore db local file 
 *.db
+
+# Ignore Bruno directory for now
+/Onisep
