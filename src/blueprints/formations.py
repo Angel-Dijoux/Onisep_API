@@ -57,10 +57,6 @@ def resolve_get_search_formation() -> Tuple[Response, int] | HTTPException:
     limit = post.get("limit")
     offset = post.get("offset")
 
-    if get_jwt_identity():
-        limit = 4
-    else:
-        limit = 2
     return search_formations(query, limit, offset)
 
 
