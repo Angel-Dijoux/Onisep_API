@@ -24,11 +24,12 @@ services:
             - 8484:80
         depends_on:
             - db
-
-    api:
+    onisep-api:
+        image: elki_97413/onisep:latest
         build:
             context: .
-            dockerfile: Dockerfile
+            dockerfile: Dockerfile.prod
+        container_name: onisep-api
         restart: always
         ports:
             - 5005:5005
@@ -39,7 +40,28 @@ services:
             DATABASE_USERNAME: ${DATABASE_USERNAME}
             DATABASE_PASSWORD: ${DATABASE_PASSWORD}
             DATABASE_HOST: db
-        container_name: api
+            ONISEP_EMAIL: ${ONISEP_EMAIL}
+            ONISEP_PASSWORD: ${ONISEP_PASSWORD}
+            ONISEP_APP_ID: ${ONISEP_APP_ID}
+    backend_upgrade:
+        image: elki_97413/onisep_backend_update:latest
+        build:
+            context: .
+            dockerfile: Dockerfile.database
+        environment:
+            DATABASE_HOST: db
+            DATABASE_USERNAME: ${DATABASE_USERNAME}
+            DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+        depends_on:
+            - db
+        command:
+        - /bin/sh
+        - -c
+        - |
+            pipenv install --deploy --ignore-pipfile
+            echo "------- Dependencies installed -------"
+            pipenv run flask db upgrade
+            echo "------- Database upgraded -------"
 
 volumes:
     db:
