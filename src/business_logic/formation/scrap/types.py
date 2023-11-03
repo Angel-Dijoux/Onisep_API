@@ -10,6 +10,12 @@ class Facet:
 
 
 @dataclass
-class SearchedFormations:
+class FormationIsFavortite:
+    formation: Formation
+    is_favorite: bool
+
+
+@dataclass
+class FormationsWithTotal:
     total: int
-    formations: list[Formation]
+    formations: list[Formation | FormationIsFavortite]

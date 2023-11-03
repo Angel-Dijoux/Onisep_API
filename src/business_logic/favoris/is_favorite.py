@@ -1,11 +1,11 @@
 from sqlalchemy import and_, exists
-from src.business_logic.formation import get_formation_by_url
+from src.business_logic.formation.get_formation_by_url import get_formation_by_url
 from src.models.user_favori import UserFavori
 
 from src import db
 
 
-def is_favorite(user_id: str, url: str) -> bool:
+def check_if_is_favorite(user_id: str, url: str) -> bool:
     formation = get_formation_by_url(url)
 
     if formation is None:

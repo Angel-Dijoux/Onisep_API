@@ -1,5 +1,6 @@
 import os
-from src.business_logic.formation.scrap.get_onisep_token import get_token
+
+from src.business_logic.formation.scrap.utils.get_onisep_token import get_token
 
 
 ONISEP_URL = "https://api.opendata.onisep.fr/api/1.0/dataset/"
