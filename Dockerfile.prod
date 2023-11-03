@@ -14,10 +14,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-COPY entrypoint.sh /
-RUN chmod +x /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]
-
 EXPOSE 5005
 
 CMD ["gunicorn", "run:app" ,"-c" ,"gunicorn.conf.py" ]

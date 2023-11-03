@@ -1,0 +1,26 @@
+name: deploy_database_production
+concurrency: deploy_database_production
+
+on:
+  workflow_dispatch:
+  workflow_call:
+    secrets:
+      DATABASE_USERNAME:
+        required: true
+      DATABASE_PASSWORD:
+        required: true
+
+jobs:
+  upgrade:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v3
+      - name: Upgrade database
+        run: docker-compose up -d backend_upgrade
+      - name: Stop container
+        run: docker-compose stop -d backend_upgrade
+      - name: Remove image
+        run: docker rmi elki_97413/onisep_backend_update:latest
+    env:
+      DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
+      DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}

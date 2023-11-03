@@ -1,6 +1,7 @@
-name: Deployment
+name: Deployments
 
 on:
+  workflow_dispatch:
   workflow_call:
   push:
     branches:
@@ -19,17 +20,34 @@ env:
   ONISEP_APP_ID: ${{ secrets.ONISEP_APP_ID }}
 
 jobs:
-  build:
+  deploy-datatabse:
+    uses: ./.github/workflows/deploy_database_production.yml
+    secrets: inherit
+  deploy-api:
     runs-on: self-hosted
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      - name: Stop running Docker container
-        run: docker stop api
-      - name: remove container
-        run: docker rm api
-      - name: Remove previous Docker image
-        run: docker rmi onisep_api-api:latest
-      - name: Build and Run Docker container
-        run: docker-compose up -d
+
+      - name: Check if container exists
+        id: check-container
+        run: |
+          if docker ps -a | grep -q 'onisep-api'; then
+            echo "Container onisep api exists"
+            echo "::set-output name=container_exists::true"
+          else
+            echo "Container onisep api does not exist"
+            echo "::set-output name=container_exists::false"
+          fi
+
+      - name: Stop and Remove Old Container
+        if: steps.check-container.outputs.container_exists == 'true'
+        run: docker-compose stop onisep-api && docker-compose rm -f onisep-api
+
+      - name: Remove Old Image
+        if: steps.check-container.outputs.container_exists == 'true'
+        run: docker rmi elki_97413/onisep:latest
+
+      - name: Build Docker image and Start New Container
+        run: docker-compose up -d onisep-api

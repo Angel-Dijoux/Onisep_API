@@ -1,0 +1,19 @@
+FROM python:slim-buster AS build
+ENV PYTHONUNBUFFERED 1
+
+LABEL authors="Angel-Dijoux"
+
+WORKDIR  /app
+
+ENV JWT_SECRET_KEY=UNUSED
+ENV ENV=production
+ENV FLASK_APP=src
+
+
+COPY requirements.txt Pipfile Pipfile.lock ./
+
+RUN pip install --user --no-cache-dir pipenv
+
+COPY . .
+
+ENV PATH="${PATH}:/root/.local/bin"

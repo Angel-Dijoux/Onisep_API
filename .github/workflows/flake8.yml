@@ -1,4 +1,4 @@
-name: flake8 Lint
+name: flake8 & ruff linter
 
 on: [push]
 
@@ -17,3 +17,11 @@ jobs:
         uses: py-actions/flake8@v2
         with:
           args: "--config=./.flake8"
+  ruff-check:
+    runs-on: ubuntu-latest
+    name: check
+    steps:
+      - uses: actions/checkout@v3
+      - uses: chartboost/ruff-action@v1
+        with:
+          args: "--config=./pyproject.toml"
