@@ -25,7 +25,7 @@ jobs:
     secrets: inherit
   deploy-api:
     runs-on: self-hosted
-
+    needs: [deploy-datatabse]
     steps:
       - name: Checkout code
         uses: actions/checkout@v3

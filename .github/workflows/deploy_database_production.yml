@@ -17,8 +17,8 @@ jobs:
       - uses: actions/checkout@v3
       - name: Upgrade database
         run: docker-compose up -d backend_upgrade
-      - name: Stop container
-        run: docker-compose stop -d backend_upgrade
+      - name: Stop & remove container
+        run: docker-compose stop backend_upgrade && docker-compose rm -f backend_upgrade
       - name: Remove image
         run: docker rmi elki_97413/onisep_backend_update:latest
     env:
