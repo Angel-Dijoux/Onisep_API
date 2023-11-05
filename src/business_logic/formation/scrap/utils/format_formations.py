@@ -1,6 +1,6 @@
 from src.business_logic.favoris.is_favorite import check_if_is_favorite
 from src.business_logic.formation.scrap.types import (
-    FormationIsFavortite,
+    FormationIsFavorite,
 )
 from src.models.formation import Formation
 
@@ -20,14 +20,20 @@ def _create_formation_from_dict(formation: dict) -> Formation:
 
 
 def format_formations(data: list[dict]) -> list[Formation]:
-    return [_create_formation_from_dict(formation).to_dict() for formation in data]
+    return [
+        FormationIsFavorite(
+            formation=_create_formation_from_dict(formation).to_dict(),
+            is_favorite=False,
+        )
+        for formation in data
+    ]
 
 
 def format_formation_with_is_favorite(
     user_id: int, data: list[dict]
-) -> list[FormationIsFavortite]:
+) -> list[FormationIsFavorite]:
     return [
-        FormationIsFavortite(
+        FormationIsFavorite(
             formation=_create_formation_from_dict(formation).to_dict(),
             is_favorite=check_if_is_favorite(user_id, formation["url_et_id_onisep"]),
         )

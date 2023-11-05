@@ -10,7 +10,7 @@ class Facet:
 
 
 @dataclass
-class FormationIsFavortite:
+class FormationIsFavorite:
     formation: Formation
     is_favorite: bool
 
@@ -18,4 +18,4 @@ class FormationIsFavortite:
 @dataclass
 class FormationsWithTotal:
     total: int
-    formations: list[Formation | FormationIsFavortite]
+    formations: list[Formation | FormationIsFavorite]

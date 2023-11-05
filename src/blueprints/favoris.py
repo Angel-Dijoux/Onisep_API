@@ -9,7 +9,8 @@ from sqlalchemy import and_, exists
 from werkzeug.exceptions import HTTPException
 
 from src import db
-from src.business_logic.formation import get_formation_by_url
+from src.business_logic.favoris.get_favoris import get_favoris_by_user_id
+from src.business_logic.formation.get_formation_by_url import get_formation_by_url
 from src.constants.http_status_codes import (
     HTTP_200_OK,
     HTTP_201_CREATED,
@@ -69,17 +70,11 @@ def post_favori_by_user_id() -> Tuple[Response, int] | HTTPException:
 @favoris.route("/", methods=["GET"])
 @jwt_required()
 @swag_from("../docs/favoris/getFavoris.yaml")
-def get_favoris_by_user_id() -> Tuple[Response, int]:
+def resolve_get_favoris_by_user_id() -> Tuple[Response, int]:
     current_user = get_jwt_identity()
-    favoris = (
-        db.session.query(Formation)
-        .join(UserFavori, UserFavori.formation_id == Formation.id)
-        .filter(UserFavori.user_id == current_user)
-        .all()
-    )
+    favoris = get_favoris_by_user_id(current_user)
 
-    result = [favori.to_dict() for favori in favoris]
-    response_data = {"size": len(favoris), "results": result}
+    response_data = {"size": favoris.total, "results": favoris.formations}
 
     return jsonify(response_data), HTTP_200_OK
 
