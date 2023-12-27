@@ -23,52 +23,36 @@ post:
         type: object
         required:
           - "code_nsf"
-          - "sigle_type_formation"
-          - "libelle_type_formation"
-          - "libelle_formation_principal"
-          - "sigle_formation"
-          - "duree"
-          - "niveau_de_sortie_indicatif"
-          - "code_rncp"
-          - "niveau_de_certification"
-          - "libelle_niveau_de_certification"
+          - "type"
+          - "libelle"
           - "tutelle"
-          - "url_et_id_onisep"
+          - "url"
+          - "domain"
+          - "niveau_de_sortie"
+          - "duree"
         properties:
           code_nsf:
             type: integer
             example: 210
-          sigle_type_formation:
+          type:
             type: "String"
             example: "BTSA"
-          libelle_type_formation:
+          libelle:
             type: "String"
             example: "brevet de technicien supérieur agricole"
-          libelle_formation_principal:
-            type: "String"
-            example: "BTSA technico-commercial option biens et services pour l'agriculture"
-          sigle_formation:
+          domain:
             type: "String"
             example: "BSA"
-          duree:
+          niveau_de_sortie:
             type: "String"
             example: "2 ans"
-          niveau_de_sortie_indicatif:
+          duree:
             type: "String"
             example: "Bac + 2"
-          code_rncp:
-            type: integer
-            example: 36003
-          niveau_de_certification:
-            type: "String"
-            example: "3"
-          libelle_niveau_de_certification:
-            type: String
-            example: "niveau 5 (bac + 2)"
           tutelle:
             type: "String"
             example: "Ministère de l'Agriculture et de la Souveraineté alimentaire"
-          url_et_id_onisep:
+          url:
             type: url
             example: "http://www.onisep.fr/http/redirection/formation/slug/FOR.7273"
 responses:
