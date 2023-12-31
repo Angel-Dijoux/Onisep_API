@@ -27,6 +27,7 @@ pytest-cov = "*"
 pytest-mock = "*"
 pytest-socket = "*"
 pytest-sugar = "*"
+factory-boy = "*"
 
 [dev-packages]
 
