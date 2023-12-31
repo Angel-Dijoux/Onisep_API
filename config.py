@@ -45,3 +45,28 @@ class ProductionConfig(Config):
         "pool_size": 10,
         "max_overflow": 20,
     }
+
+
+class TestingConfig(Config):
+    DEBUG = True
+    TESTING = True
+    SECRET_KEY = "test"
+    JWT_SECRET_KEY = "test"
+    ENABLE_SEMANTIC_SEARCH = False
+    SQLALCHEMY_DATABASE_URI = os.environ.get(
+        "DATABASE_URI_TESTING",
+        "mysql+mysqlconnector://root:@/onisep_testing?charset=utf8mb4&collation=utf8mb4_general_ci",
+    )
+
+
+def load_config(env: str) -> Config:
+    config_switch = {
+        "production": ProductionConfig,
+        "testing": TestingConfig,
+        "development": DevelopmentConfig,
+    }
+
+    config = config_switch.get(env, DevelopmentConfig)
+    config.ENV = env
+
+    return config

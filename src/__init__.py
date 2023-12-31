@@ -1,3 +1,4 @@
+import os
 import sys
 
 from flasgger import Swagger
@@ -8,9 +9,8 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from loguru import logger
 
-from config import DevelopmentConfig, ProductionConfig
+from config import load_config
 from src.config.swagger import swagger_config, template
-from src.constants.env import is_dev
 
 from .errors import register_error_handlers
 from .middlewares import after_request
@@ -18,14 +18,13 @@ from .middlewares import after_request
 db = SQLAlchemy()
 
 
-def create_app(config_class=DevelopmentConfig):
+def create_app(environment=None):
     _setup_logging()
+    env = environment or os.environ.get("ENV")
+    config = load_config(env)
     app = Flask(__name__, instance_relative_config=True)
 
-    if not is_dev():
-        config_class = ProductionConfig
-
-    app.config.from_object(config_class)
+    app.config.from_object(config)
     CORS(app)
     db.init_app(app)
     Migrate().init_app(app, db)
@@ -53,13 +52,18 @@ def register_blueprints(app: Flask):
     app.register_blueprint(formations)
 
 
-def _setup_logging():
-    logger.remove()
-    logger.level("INFO", color="<green>")
-    logger.level("DEBUG", color="<blue>")
-    logger.level("WARNING", color="<yellow>")
-    logger.level("ERROR", color="<red>")
-    logger.level("CRITICAL", color="<red>")
+def _set_log_levels():
+    log_levels = {
+        "INFO": "<green>",
+        "DEBUG": "<blue>",
+        "WARNING": "<yellow>",
+        "ERROR": "<red>",
+        "CRITICAL": "<red>",
+    }
+    [logger.level(level, color=color) for level, color in log_levels.items()]
+
+
+def _add_stderr_logger():
     logger.add(
         sys.stderr,
         colorize=True,
@@ -70,3 +74,9 @@ def _setup_logging():
             "{extra}"
         ),
     )
+
+
+def _setup_logging():
+    logger.remove()
+    _set_log_levels()
+    _add_stderr_logger()
