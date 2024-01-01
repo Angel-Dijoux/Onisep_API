@@ -4,7 +4,10 @@ import requests
 from src.business_logic.formation import HEADERS, ONISEP_URL, HeaderKey
 from src.business_logic.formation.exceptions import NoOnisepAPIException
 from src.business_logic.formation.scrap.utils.get_onisep_token import get_token
-from src.constants.http_status_codes import HTTP_200_OK, HTTP_401_UNAUTHORIZED
+from src.constants.http_status_codes import (
+    HTTP_200_OK,
+    HTTP_401_UNAUTHORIZED,
+)
 
 
 DATASET = "5fa591127f501"
@@ -23,3 +26,20 @@ def get_onisep_data(params: str) -> dict:
     raise NoOnisepAPIException(
         f"\n status: {response.status_code} \n message : Onisep API is down.  \n dataset : {DATASET} \n headers : {HEADERS} "
     )
+
+
+def get_raw_data(
+    query: str = None,
+    limit: int = 10,
+    offset: int = None,
+    is_main_formations: bool = True,
+) -> dict:
+    if is_main_formations:
+        params = f"/search?&size={limit}"
+    else:
+        params = f"/search?q={query}&size={limit}"
+
+    if offset:
+        params += f"&from={offset}"
+
+    return get_onisep_data(params)
