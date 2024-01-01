@@ -45,9 +45,11 @@ def register_blueprints(app: Flask):
     from src.blueprints.favoris import favoris
     from src.blueprints.formations import formations
     from src.blueprints.utils import utils
+    from src.blueprints.legal.views import legal
 
     app.register_blueprint(utils)
     app.register_blueprint(auth)
+    app.register_blueprint(legal)
     app.register_blueprint(favoris)
     app.register_blueprint(formations)
 
