@@ -6,13 +6,9 @@ class UserFactory(factory.Factory):
     class Meta:
         model = models.User
 
-    username = factory.Faker("uuidv4")
-    email = factory.Faker("uuidv4")
-
-
-class UserFavorisFactory(factory.Factory):
-    class Meta:
-        model = models.UserFavori
+    username = factory.Faker("uuid4")
+    email = factory.Faker("uuid4")
+    password = factory.Faker("uuid4")
 
 
 class FormationFactory(factory.Factory):
@@ -29,3 +25,10 @@ class FormationFactory(factory.Factory):
     domain = "hôtellerie-restauration, tourisme/hôtellerie | hôtellerie-restauration, tourisme/restauration"
     niveau_de_sortie = "Bac ou équivalent"
     duree = "1 an"
+
+
+class UserFavorisFactory(factory.Factory):
+    class Meta:
+        model = models.UserFavori
+
+    formation = factory.SubFactory(FormationFactory)

@@ -1,11 +1,23 @@
 from unittest.mock import patch
 
 import pytest
-from src.business_logic.formation.scrap.search_formation import search_formations
+from src.business_logic.formation.scrap.search_formation import (
+    auth_search_formations,
+    search_formations,
+)
 from src.business_logic.formation.scrap.types import (
     FormationsWithTotal,
 )
-from src.business_logic.formation.scrap.utils.format_formations import format_formations
+from src.business_logic.formation.scrap.utils.format_formations import (
+    format_formation_with_is_favorite,
+    format_formations,
+)
+from src.models.user import User
+from src.models.user_favori import UserFavori
+from src.tests.factories.factories import (
+    UserFactory,
+    UserFavorisFactory,
+)
 
 
 MOKED_RESEARCH = {
@@ -39,7 +51,9 @@ def mock_search_formations():
         yield mock_get_raw_data
 
 
-def test_search_formations_successful(mock_search_formations):
+def test_search_formations_should_return_formations_without_favorite(
+    mock_search_formations,
+):
     # Arrange
     mock_search_formations.return_value = MOKED_RESEARCH
 
@@ -49,6 +63,35 @@ def test_search_formations_successful(mock_search_formations):
     # Assert
     moked_formation = MOKED_RESEARCH["results"]
     waited_formations = format_formations(moked_formation)
+    waited_result = FormationsWithTotal(
+        total=MOKED_RESEARCH["total"], formations=waited_formations
+    )
+
+    assert formations == waited_result
+    mock_search_formations.assert_called_once_with("STHR", 1, None)
+
+
+def test_authenticated_search_formations_should_return_formations_with_favorite(
+    mock_search_formations, db_session
+):
+    # Arrange
+    mock_search_formations.return_value = MOKED_RESEARCH
+
+    # Given
+    user: User = UserFactory()
+    db_session.add(user)
+    db_session.flush()
+
+    user_favori: UserFavori = UserFavorisFactory(user_id=user.id)
+    db_session.add(user_favori)
+    db_session.commit()
+
+    # Act
+    formations = auth_search_formations(user.id, "STHR", 1)
+
+    # Assert
+    moked_formation = MOKED_RESEARCH["results"]
+    waited_formations = format_formation_with_is_favorite(user.id, moked_formation)
     waited_result = FormationsWithTotal(
         total=MOKED_RESEARCH["total"], formations=waited_formations
     )
