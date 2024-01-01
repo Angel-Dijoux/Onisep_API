@@ -3,7 +3,7 @@ from typing import Literal
 import requests
 
 from src.business_logic.formation.exceptions import NoOnisepAPIException
-from src.constants.http_status_codes import HTTP_200_OK, HTTP_502_BAD_GATEWAY
+from src.constants.http_status_codes import HTTP_200_OK
 
 
 URL = "https://api.opendata.onisep.fr/api/1.0/login"

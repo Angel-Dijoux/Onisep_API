@@ -7,7 +7,6 @@ from src.business_logic.formation.scrap.utils.get_onisep_token import get_token
 from src.constants.http_status_codes import (
     HTTP_200_OK,
     HTTP_401_UNAUTHORIZED,
-    HTTP_502_BAD_GATEWAY,
 )
 
 
