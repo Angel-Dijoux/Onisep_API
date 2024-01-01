@@ -3,6 +3,7 @@ from typing import Literal
 import requests
 
 from src.business_logic.formation.exceptions import NoOnisepAPIException
+from src.constants.http_status_codes import HTTP_200_OK, HTTP_502_BAD_GATEWAY
 
 
 URL = "https://api.opendata.onisep.fr/api/1.0/login"
@@ -20,7 +21,7 @@ BearerToken = Literal["Bearer"]
 
 def get_token() -> BearerToken:
     response = requests.post(URL, data=_get_form_data())
-    if response.status_code == 200:
+    if response.status_code == HTTP_200_OK:
         data = response.json()
         return f"Bearer {data.get('token')}"
     raise NoOnisepAPIException(

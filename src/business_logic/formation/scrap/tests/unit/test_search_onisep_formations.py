@@ -1,4 +1,4 @@
-from unittest.mock import patch, _Mock
+from unittest.mock import patch
 
 import pytest
 from src.business_logic.formation.scrap.search_formation import (
@@ -52,7 +52,7 @@ def mock_search_formations():
 
 
 def test_search_formations_should_return_formations_without_favorite(
-    mock_search_formations: _Mock,
+    mock_search_formations,
 ):
     # Arrange
     mock_search_formations.return_value = MOKED_RESEARCH
@@ -72,7 +72,7 @@ def test_search_formations_should_return_formations_without_favorite(
 
 
 def test_authenticated_search_formations_should_return_formations_with_favorite(
-    mock_search_formations: _Mock, db_session
+    mock_search_formations, db_session
 ):
     # Arrange
     mock_search_formations.return_value = MOKED_RESEARCH

@@ -4,7 +4,11 @@ import requests
 from src.business_logic.formation import HEADERS, ONISEP_URL, HeaderKey
 from src.business_logic.formation.exceptions import NoOnisepAPIException
 from src.business_logic.formation.scrap.utils.get_onisep_token import get_token
-from src.constants.http_status_codes import HTTP_200_OK, HTTP_401_UNAUTHORIZED
+from src.constants.http_status_codes import (
+    HTTP_200_OK,
+    HTTP_401_UNAUTHORIZED,
+    HTTP_502_BAD_GATEWAY,
+)
 
 
 DATASET = "5fa591127f501"

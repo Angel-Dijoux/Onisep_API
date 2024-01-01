@@ -1,4 +1,4 @@
-from unittest.mock import _Mock, MagicMock, patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 from src.business_logic.formation.exceptions import NoOnisepAPIException
@@ -19,7 +19,7 @@ def mock_onisep_request():
         yield mock_requests_get
 
 
-def test_get_onisep_data_successful(mock_onisep_request: _Mock):
+def test_get_onisep_data_successful(mock_onisep_request):
     # Arrange
     mock_response = MagicMock()
     mock_response.status_code = HTTP_200_OK
@@ -31,7 +31,7 @@ def test_get_onisep_data_successful(mock_onisep_request: _Mock):
     assert result == {"total": "5173"}
 
 
-def test_get_onisep_data_retry_after_unauthorized(mock_onisep_request: _Mock):
+def test_get_onisep_data_retry_after_unauthorized(mock_onisep_request):
     # Arrange
     unauthorized_response = MagicMock()
     unauthorized_response.status_code = HTTP_401_UNAUTHORIZED
@@ -49,7 +49,7 @@ def test_get_onisep_data_retry_after_unauthorized(mock_onisep_request: _Mock):
     assert result == {"total": "5173"}
 
 
-def test_get_onisep_data_raises_exception(mock_onisep_request: _Mock):
+def test_get_onisep_data_raises_exception(mock_onisep_request):
     # Arrange
     mock_response = MagicMock()
     mock_response.status_code = HTTP_500_INTERNAL_SERVER_ERROR
