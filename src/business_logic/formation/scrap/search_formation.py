@@ -11,7 +11,7 @@ from src.business_logic.formation.scrap.utils.get_onisep_data import (
 def search_formations(
     query: str, limit: int, offset: int = None
 ) -> FormationsWithTotal:
-    data = get_raw_data(query, limit, offset)
+    data = get_raw_data(limit=limit, offset=offset, query=query)
 
     formated_formations = format_formations(data["results"])
 
@@ -21,7 +21,7 @@ def search_formations(
 def auth_search_formations(
     user_id: int, query: str, limit: int, offset: int = None
 ) -> FormationsWithTotal:
-    data = get_raw_data(query, limit, offset)
+    data = get_raw_data(limit=limit, offset=offset, query=query)
     formated_formations = format_formation_with_is_favorite(user_id, data["results"])
 
     return FormationsWithTotal(data["total"], formated_formations)
