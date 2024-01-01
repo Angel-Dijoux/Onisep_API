@@ -23,3 +23,20 @@ def get_onisep_data(params: str) -> dict:
     raise NoOnisepAPIException(
         f"\n status: {response.status_code} \n message : Onisep API is down.  \n dataset : {DATASET} \n headers : {HEADERS} "
     )
+
+
+def get_raw_data(
+    query: str = None,
+    limit: int = 10,
+    offset: int = None,
+    is_main_formations: bool = True,
+) -> dict:
+    if is_main_formations:
+        params = f"/search?&size={limit}"
+    else:
+        params = f"/search?q={query}&size={limit}"
+
+    if offset:
+        params += f"&from={offset}"
+
+    return get_onisep_data(params)
