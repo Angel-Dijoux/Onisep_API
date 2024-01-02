@@ -1,11 +1,12 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import Optional
 from bs4 import BeautifulSoup
 
 
 @dataclass
 class Expectation:
-    sub_title: str
-    sub_expectations: list[str]
+    title: str
+    sub_expectations: Optional[list[str]] = field(default_factory=list)
 
 
 @dataclass
@@ -26,7 +27,7 @@ class HtmlParser:
         self.__soup: BeautifulSoup = BeautifulSoup(html_content, self.PARSER)
 
     def _create_main_expectation(self, element_text: str) -> Expectation:
-        return Expectation(sub_title=element_text.strip(), sub_expectations=[])
+        return Expectation(title=element_text.strip(), sub_expectations=[])
 
     def _add_sub_expectation(self, current_expectation: Expectation, element_text: str):
         current_expectation.sub_expectations.append(element_text.strip())

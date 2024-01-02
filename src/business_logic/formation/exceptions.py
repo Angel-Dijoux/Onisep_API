@@ -4,3 +4,9 @@ class NoOnisepAPIException(Exception):
     """
 
     pass
+
+
+class ProcessFormationException(Exception):
+    """
+    Raised when we cannot process json formation
+    """
