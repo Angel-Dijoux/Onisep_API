@@ -28,6 +28,7 @@ pytest-mock = "*"
 pytest-socket = "*"
 pytest-sugar = "*"
 factory-boy = "*"
+beautifulsoup4 = "*"
 
 [dev-packages]
 
