@@ -22,3 +22,7 @@ get:
 responses:
   200:
     description: Lorsque la requête se passe avec succès.
+    schema:
+          type: array
+          items:
+            $ref: "#/definitions/Formation"

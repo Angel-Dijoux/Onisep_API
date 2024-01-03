@@ -27,6 +27,8 @@ parameters:
 responses:
   201:
     description: Lorsqu'un utilisateur s'enregistre avec succès.
+    schema:
+      $ref: "#/definitions/User"
 
   400:
     description: Un utilisateur fournit des informations d'identification incorrectes.

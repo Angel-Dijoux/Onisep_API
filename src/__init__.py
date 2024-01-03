@@ -10,12 +10,23 @@ from flask_sqlalchemy import SQLAlchemy
 from loguru import logger
 
 from config import load_config
-from src.config.swagger import swagger_config, template
+from src.config.swagger import (
+    get_swagger_api_spec,
+    swagger_config,
+)
+from src.models.schemas import schemas
+from flasgger.utils import apispec_to_template
 
 from .errors import register_error_handlers
 from .middlewares import after_request
+from apispec.ext.marshmallow import MarshmallowPlugin
+from apispec_webframeworks.flask import FlaskPlugin
 
-db = SQLAlchemy()
+db: SQLAlchemy = SQLAlchemy()
+plugins = [
+    FlaskPlugin(),
+    MarshmallowPlugin(),
+]
 
 
 def create_app(environment=None):
@@ -33,10 +44,16 @@ def create_app(environment=None):
     with app.app_context():
         register_blueprints(app)
 
+    template = apispec_to_template(
+        app=app,
+        spec=get_swagger_api_spec(config=config, plugins=plugins),
+        definitions=schemas,
+    )
+    Swagger(app, config=swagger_config, template=template, parse=True)
+
     app.after_request(after_request)
     register_error_handlers(app)
 
-    Swagger(app, config=swagger_config, template=template)
     return app
 
 

@@ -20,44 +20,12 @@ post:
       in: body
       required: true
       schema:
-        type: object
-        required:
-          - "code_nsf"
-          - "type"
-          - "libelle"
-          - "tutelle"
-          - "url"
-          - "domain"
-          - "niveau_de_sortie"
-          - "duree"
-        properties:
-          code_nsf:
-            type: integer
-            example: 210
-          type:
-            type: "String"
-            example: "BTSA"
-          libelle:
-            type: "String"
-            example: "brevet de technicien supérieur agricole"
-          domain:
-            type: "String"
-            example: "BSA"
-          niveau_de_sortie:
-            type: "String"
-            example: "2 ans"
-          duree:
-            type: "String"
-            example: "Bac + 2"
-          tutelle:
-            type: "String"
-            example: "Ministère de l'Agriculture et de la Souveraineté alimentaire"
-          url:
-            type: url
-            example: "http://www.onisep.fr/http/redirection/formation/slug/FOR.7273"
+        $ref: "#/definitions/Formation"
 responses:
   201:
     description: L'url est bien enregistrée.
+    schema:
+      $ref: "#/definitions/Formation"
 
   400:
     description: L'url n'est pas valide.
