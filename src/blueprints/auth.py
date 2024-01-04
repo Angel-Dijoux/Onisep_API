@@ -82,7 +82,7 @@ def login() -> Tuple[Response, int] | HTTPException:
         email = data.get("email")
         password = data.get("password")
 
-        user = User.query.filter_by(email=email).first()
+        user = db.session.query(User).filter_by(email=email).first()
 
         if user:
             # Verify if password check with password in database
@@ -119,7 +119,7 @@ def login() -> Tuple[Response, int] | HTTPException:
 def me() -> Tuple[Response, int]:
     user_id = get_jwt_identity()
 
-    user = User.query.filter_by(id=user_id).first()
+    user = db.session.query(User).filter_by(id=user_id).first()
 
     return (
         jsonify(user),
@@ -148,7 +148,7 @@ def refresh_token() -> Tuple[Response, int]:
 def edit_user() -> Tuple[Response, int] | HTTPException:
     user_id = get_jwt_identity()
 
-    user = User.query.filter_by(id=user_id).first()
+    user = db.session.query(User).filter_by(id=user_id).first()
 
     data = request.json
 
@@ -212,7 +212,7 @@ def edit_user() -> Tuple[Response, int] | HTTPException:
 
 
 def remove_favoris(user_id: int) -> None:
-    favoris = UserFavori.query.filter(UserFavori.user_id == user_id).all()
+    favoris = db.session.query(UserFavori).filter(UserFavori.user_id == user_id).all()
     [db.session.delete(f) for f in favoris]
     db.session.commit()
 
@@ -222,7 +222,7 @@ def remove_favoris(user_id: int) -> None:
 @swag_from("../docs/auth/remove.yaml")
 def remove_user() -> Tuple[Response, int] | HTTPException:
     user_id = get_jwt_identity()
-    user = User.query.filter_by(id=user_id).first()
+    user = db.session.query(User).filter_by(id=user_id).first()
 
     if not user:
         abort(HTTP_404_NOT_FOUND, "User not found")

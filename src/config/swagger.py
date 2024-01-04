@@ -1,36 +1,46 @@
 from src.constants.env import is_dev
+from apispec import APISpec
+from apispec_webframeworks.flask import FlaskPlugin
+from apispec.ext.marshmallow import MarshmallowPlugin
+from config import Config
 
-from config import ProductionConfig
 
-template = {
-    "swagger": "2.0",
-    "info": {
-        "title": ProductionConfig.SWAGGER["title"],
-        "description": "API for user want register onisep formation",
+def get_swagger_api_spec(
+    config: Config, plugins: list[FlaskPlugin | MarshmallowPlugin]
+) -> APISpec:
+    info = {
+        **config.SWAGGER,
+        "description": "API for user registration on Onisep formation",
+        "termsOfService": "/privacy_policy",
         "contact": {
-            "responsibleOrganization": "",
-            "responsibleDeveloper": "",
             "email": "angel.dijoux@yahoo.com",
-            "url": "https://twitter.com/Elki_YT",
+            "url": "https://github.com/Angel-Dijoux",
         },
-        "termsOfService": "https://twitter.com/Elki_YT",
-        "version": ProductionConfig.SWAGGER["version"],
-    },
-    "basePath": "/api/v1",  # base bash for blueprint registration
-    "schemes": ["http" if is_dev() else "https"],
-    "securityDefinitions": {
-        "Bearer": {
-            "type": "apiKey",
-            "name": "Authorization",
-            "in": "header",
-            "description": 'JWT Authorization header using the Bearer scheme. Example: "Authorization: Bearer {token}"',
-        }
-    },
-    "security": [{"Bearer": []}],
-}
+        "license": {
+            "name": "Apache 2.0",
+            "url": "https://www.apache.org/licenses/LICENSE-2.0.html",
+        },
+    }
+    spec = APISpec(
+        title=config.SWAGGER["title"],
+        version=config.SWAGGER["version"],
+        openapi_version="2.0",
+        plugins=plugins,
+        info=info,
+    )
+    api_key_scheme = {"type": "apiKey", "in": "header", "name": "Authorization"}
+    spec.components.security_scheme("Bearer", api_key_scheme)
+    return spec
+
 
 swagger_config = {
-    "headers": [],
+    "host": ["localhost:5005" if is_dev() else "api.nc-elki.v6.army"],
+    "schemes": ["http" if is_dev() else "https"],
+    "headers": [
+        ("Access-Control-Allow-Origin", "*"),
+        ("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS"),
+        ("Access-Control-Allow-Credentials", "true"),
+    ],
     "specs": [
         {
             "endpoint": "apispec",

@@ -28,6 +28,10 @@ pytest-mock = "*"
 pytest-socket = "*"
 pytest-sugar = "*"
 factory-boy = "*"
+apispec-webframeworks = "*"
+flask-restful = "*"
+flask-marshmallow = "*"
+marshmallow-sqlalchemy = "*"
 
 [dev-packages]
 

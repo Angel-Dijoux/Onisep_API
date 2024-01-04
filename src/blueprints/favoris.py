@@ -33,7 +33,7 @@ def _create_new_formation(favori: dict) -> Formation:
 
 @favoris.route("/", methods=["POST"])
 @jwt_required()
-@swag_from("../docs/favoris/postFavoris.yaml")
+@swag_from("../docs/favoris/postFavoris.yaml", validation=True)
 def post_favori_by_user_id() -> Tuple[Response, int] | HTTPException:
     current_user = get_jwt_identity()
 
