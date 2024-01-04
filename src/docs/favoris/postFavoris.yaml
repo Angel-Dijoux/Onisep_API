@@ -20,12 +20,30 @@ post:
       in: body
       required: true
       schema:
-        $ref: "#/definitions/Formation"
+        allOf:
+          - $ref: "#/definitions/Formation"
+          - type: object
+            properties:
+              updated_at:
+              created_at:
+              id:
 responses:
   201:
     description: L'url est bien enregistrée.
     schema:
-      $ref: "#/definitions/Formation"
+      type: object
+      properties:
+        created_at:
+          type: string
+          format: date-time
+        formation_id:
+          type: string
+          format: uuid
+        updated_at:
+          type: string
+          format: date-time
+        user_id:
+          type: integer
 
   400:
     description: L'url n'est pas valide.

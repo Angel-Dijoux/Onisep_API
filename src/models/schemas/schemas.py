@@ -7,6 +7,7 @@ from src.models.user_favori import UserFavori
 class UserSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = User
+        exclude = ("created_at", "updated_at", "password")
 
 
 class FormationSchema(SQLAlchemyAutoSchema):

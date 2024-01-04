@@ -28,14 +28,13 @@ def get_swagger_api_spec(
         plugins=plugins,
         info=info,
     )
-    api_key_scheme = {"type": "apiKey", "in": "header", "name": "X-API-Key"}
+    api_key_scheme = {"type": "apiKey", "in": "header", "name": "Authorization"}
     spec.components.security_scheme("Bearer", api_key_scheme)
     return spec
 
 
 swagger_config = {
     "host": ["localhost:5005" if is_dev() else "api.nc-elki.v6.army"],
-    "basePath": "/api/v1",
     "schemes": ["http" if is_dev() else "https"],
     "headers": [
         ("Access-Control-Allow-Origin", "*"),

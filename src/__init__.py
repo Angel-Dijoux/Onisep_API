@@ -49,7 +49,7 @@ def create_app(environment=None):
         spec=get_swagger_api_spec(config=config, plugins=plugins),
         definitions=schemas,
     )
-    Swagger(app, config=swagger_config, template=template, parse=True)
+    Swagger(app, config=swagger_config, template=template)
 
     app.after_request(after_request)
     register_error_handlers(app)
