@@ -28,12 +28,20 @@ class Config(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     JWT_SECRET_KEY = SECRET_KEY
 
-    SWAGGER = {"title": "Onisep_User API", "uiversion": "3", "version": "1.0.4"}
+    API_VERSION = "1.0.5"
+
+    SWAGGER = {"title": "Onisep Explorer", "uiversion": "3", "version": API_VERSION}
 
 
 class DevelopmentConfig(Config):
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = get_db_dev_uri()
+
+    SWAGGER = {
+        "title": "Onisep Explorer DEV",
+        "uiversion": "3",
+        "version": Config.API_VERSION,
+    }
 
 
 class ProductionConfig(Config):

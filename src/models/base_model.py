@@ -1,12 +1,15 @@
-from src import db
-from sqlalchemy import func
+from sqlalchemy import Column, DateTime, func
+from sqlalchemy.ext.declarative import declarative_base
 
 
-class BaseModel(db.Model):
+Model = declarative_base(name="Model")
+
+
+class BaseModel(Model):
     __abstract__: bool = True
-    created_at = db.Column(db.DateTime, nullable=False, default=func.now())
-    updated_at = db.Column(
-        db.DateTime, nullable=False, default=func.now(), onupdate=func.now()
+    created_at = Column(DateTime, nullable=False, default=func.now())
+    updated_at = Column(
+        DateTime, nullable=False, default=func.now(), onupdate=func.now()
     )
 
     def to_dict(self):

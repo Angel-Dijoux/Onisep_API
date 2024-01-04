@@ -29,6 +29,10 @@ pytest-socket = "*"
 pytest-sugar = "*"
 factory-boy = "*"
 beautifulsoup4 = "*"
+apispec-webframeworks = "*"
+flask-restful = "*"
+flask-marshmallow = "*"
+marshmallow-sqlalchemy = "*"
 
 [dev-packages]
 
