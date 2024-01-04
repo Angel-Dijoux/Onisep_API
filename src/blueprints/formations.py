@@ -1,11 +1,11 @@
-import json
-from typing import Any, Tuple
+from typing import Tuple
 
 from flask import Blueprint, Response, request
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from werkzeug.exceptions import HTTPException
 
 from src.blueprints.route_handler import HttpMethod, route_handler
+from src.business_logic.formation.get_formation_details import get_formation_by_id
 from src.business_logic.formation.scrap.get_main_formation import (
     auth_get_main_formations,
     get_main_formations,
@@ -19,14 +19,10 @@ from src.business_logic.formation.scrap.search_formation import (
 )
 from src.constants.http_status_codes import (
     HTTP_200_OK,
+    HTTP_204_NO_CONTENT,
 )
 
 formations = Blueprint("formations", __name__, url_prefix="/api/v1/formations")
-
-
-def _filter_by_link(formations: list[dict[str, Any]], for_id: str) -> dict[str, Any]:
-    filtered_list = list(filter(lambda f: f["identifiant"] == for_id, formations))
-    return filtered_list[0] if filtered_list else {}
 
 
 @route_handler(formations, "/", HttpMethod.POST)
@@ -48,9 +44,8 @@ def resolve_get_main_formations() -> Tuple[Response, int] | HTTPException:
     "../docs/formations/formation.yaml",
 )
 def resolve_get_formation_by_id(id: str) -> Tuple[Response, int] | HTTPException:
-    with open("assets/formation/data.json", "r") as json_file:
-        result = _filter_by_link(json.load(json_file)["formations"]["formation"], id)
-    return result, HTTP_200_OK if len(result) > 0 else HTTP_200_OK
+    result = get_formation_by_id(id)
+    return result, HTTP_200_OK if result else HTTP_204_NO_CONTENT
 
 
 @route_handler(
