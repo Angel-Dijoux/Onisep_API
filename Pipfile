@@ -33,6 +33,7 @@ apispec-webframeworks = "*"
 flask-restful = "*"
 flask-marshmallow = "*"
 marshmallow-sqlalchemy = "*"
+apispec = "*"
 
 [dev-packages]
 
