@@ -1,5 +1,4 @@
-import json
-from typing import Any, Tuple
+from typing import Tuple
 
 from flask import Blueprint, Response, request
 from flask_jwt_extended import get_jwt_identity, jwt_required
