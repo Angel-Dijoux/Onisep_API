@@ -32,7 +32,7 @@ auth = Blueprint("auth", __name__, url_prefix="/api/v1/auth")
 
 @auth.post("/register")
 @swag_from("../docs/auth/login/register.yaml")
-def register() -> Tuple[Response, int] | HTTPException:
+def register() -> Tuple[Response, int]:
     # Collect informations
     data = request.json
     if data is not None:
@@ -41,16 +41,16 @@ def register() -> Tuple[Response, int] | HTTPException:
         password = data.get("password")
 
         if len(password) < 6 or not re.match(r"^[a-zA-Z0-9]{3,20}$", username):
-            abort(HTTP_400_BAD_REQUEST, "Invalid password or username")
+            return {"error": "Invalid password or username"}, HTTP_400_BAD_REQUEST
         # Verify with "validators" if email is valid
         if not validators.email(email):
-            abort(HTTP_409_CONFLICT, "Email is not valid")
+            return {"error": "Email is not valid"}, HTTP_409_CONFLICT
         # Verify if email is in database
-        if User.query.filter_by(email=email).first() is not None:
-            abort(HTTP_409_CONFLICT, "Email is taken")
+        if db.session.query(User).filter_by(email=email).first() is not None:
+            return {"error": "Email is taken"}, HTTP_409_CONFLICT
         # Verify if username is in database
-        if User.query.filter_by(username=username).first() is not None:
-            abort(HTTP_409_CONFLICT, "username is taken")
+        if db.session.query(User).filter_by(username=username).first() is not None:
+            return {"error": "username is taken"}, HTTP_409_CONFLICT
         # Hash password
         pwd_hash = generate_password_hash(password)
 
@@ -67,7 +67,7 @@ def register() -> Tuple[Response, int] | HTTPException:
             ),
             HTTP_201_CREATED,
         )
-    return abort(HTTP_400_BAD_REQUEST, "Invalid request body")
+    return {"error": "Invalid request body"}, HTTP_400_BAD_REQUEST
 
 
 # Login function in "/api/v1/auth/login" with flasgger
@@ -106,8 +106,8 @@ def login() -> Tuple[Response, int] | HTTPException:
                     ),
                     HTTP_200_OK,
                 )
-        abort(HTTP_401_UNAUTHORIZED, "Wrong credendials")
-    abort(HTTP_400_BAD_REQUEST, "Invalid request body")
+        return {"error": "Wrong credendials"}, HTTP_401_UNAUTHORIZED
+    return {"error": "Invalid request body"}, HTTP_400_BAD_REQUEST
 
 
 # Me function need JWT token return userInfo
