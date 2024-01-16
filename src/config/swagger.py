@@ -36,11 +36,7 @@ def get_swagger_api_spec(
 swagger_config = {
     "host": ["localhost:5005" if is_dev() else "api.nc-elki.v6.army"],
     "schemes": ["http" if is_dev() else "https"],
-    "headers": [
-        ("Access-Control-Allow-Origin", "*"),
-        ("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS"),
-        ("Access-Control-Allow-Credentials", "true"),
-    ],
+    "headers": [],
     "specs": [
         {
             "endpoint": "apispec",
