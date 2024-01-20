@@ -1,7 +1,10 @@
 from dataclasses import dataclass, field
 from typing import Optional
 
+import strawberry
 
+
+@strawberry.type
 @dataclass
 class ContinuationOfStudies:
     title: str = ""

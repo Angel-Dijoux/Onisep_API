@@ -16,8 +16,11 @@ from src.business_logic.formation.study.get_continuation_of_study import (
     process_continuation_studies,
 )
 
+import strawberry
+
 
 @dataclass
+@strawberry.type
 class Formation:
     id: str
     exceptions: Optional[ParcourSupExpectations]
@@ -60,7 +63,6 @@ def _process_formation(for_id: str) -> Formation:
         certificat = formation["nature_certificat"]["libelle_nature_certificat"]
         sigle = formation["sigle"] if formation["sigle"] else None
         type_sigle = formation["type_Formation"]["type_formation_sigle"]
-
         metier = formation["metiers_formation"]["metier"]
         jobs = process_jobs(metier if metier else None)
 
@@ -84,7 +86,7 @@ def _process_formation(for_id: str) -> Formation:
         )
 
 
-def get_formation_by_id(for_id: str) -> Formation:
+def get_formation_by_id(for_id: str = "FOR.1234") -> Formation:
     try:
         return _process_formation(for_id)
     except Exception as e:

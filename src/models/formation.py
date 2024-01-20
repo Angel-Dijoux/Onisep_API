@@ -3,6 +3,7 @@ import uuid
 from sqlalchemy import Column, Integer, String, Text
 from src.models.base_model import BaseModel
 from src.models.helpers.UUIDType import UUIDType
+import strawberry
 
 
 def default_uuid5():
@@ -11,6 +12,7 @@ def default_uuid5():
     return uuid.uuid5(namespace, name)
 
 
+@strawberry.type
 class Formation(BaseModel):
     __tablename__ = "formation"
 
