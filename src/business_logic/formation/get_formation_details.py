@@ -22,7 +22,7 @@ DATE_FORMAT = "%d/%m/%Y"
 
 @dataclass
 @strawberry.type
-class Formation:
+class FormationDetails:
     id: str
     exceptions: Optional[ParcourSupExpectations]
     duree: str
@@ -49,7 +49,7 @@ def _read_json_formation(for_id: str) -> Optional[dict[str, Any]]:
     return result if len(result) > 0 else None
 
 
-def _process_formation(for_id: str) -> Formation:
+def _process_formation(for_id: str) -> FormationDetails:
     formation = _read_json_formation(for_id)
 
     if formation:
@@ -74,7 +74,7 @@ def _process_formation(for_id: str) -> Formation:
         updated_at = datetime.strptime(
             formation["modification_date"], DATE_FORMAT
         ).date()
-        return Formation(
+        return FormationDetails(
             id=identifiant,
             exceptions=exceptions,
             duree=duree,
@@ -89,7 +89,7 @@ def _process_formation(for_id: str) -> Formation:
         )
 
 
-def get_formation_by_id(for_id: str) -> Formation:
+def get_formation_by_id(for_id: str) -> FormationDetails:
     try:
         return _process_formation(for_id)
     except Exception as e:

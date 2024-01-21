@@ -1,9 +1,8 @@
+from src import db
 from src.business_logic.formation.scrap.types import (
     FormationIsFavorite,
     FormationsWithTotal,
 )
-
-from src import db
 from src.models.formation import Formation
 from src.models.user_favori import UserFavori
 
