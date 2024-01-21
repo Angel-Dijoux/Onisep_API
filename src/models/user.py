@@ -1,14 +1,11 @@
-from dataclasses import dataclass
-from typing import List, Optional
-
-from sqlalchemy import Column, Integer, String, Text
-from src.models.base_model import BaseModel
-from src.models.user_favori import UserFavori
-from sqlalchemy.orm import relationship
-from sqlalchemy.orm import Mapped
+from typing import Optional
 
 import strawberry
+from sqlalchemy import Column, Integer, String, Text
+from sqlalchemy.orm import relationship
 
+from src.models.base_model import BaseModel
+from src.models.user_favori import UserFavori
 
 # Create User row
 

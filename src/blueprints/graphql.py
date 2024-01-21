@@ -1,7 +1,5 @@
-from flask import Blueprint, Response, jsonify
+from flask import Blueprint, Response
 from strawberry.flask.views import GraphQLView
-
-from src.constants.http_status_codes import HTTP_200_OK
 
 from src.api.schema import schema
 
