@@ -22,6 +22,7 @@ from .middlewares import after_request
 from apispec.ext.marshmallow import MarshmallowPlugin
 from apispec_webframeworks.flask import FlaskPlugin
 
+
 db: SQLAlchemy = SQLAlchemy()
 plugins = [
     FlaskPlugin(),
@@ -63,12 +64,14 @@ def register_blueprints(app: Flask):
     from src.blueprints.formations import formations
     from src.blueprints.utils import utils
     from src.blueprints.legal.views import legal
+    from src.blueprints.graphql import graphql
 
     app.register_blueprint(utils)
     app.register_blueprint(auth)
     app.register_blueprint(legal)
     app.register_blueprint(favoris)
     app.register_blueprint(formations)
+    app.register_blueprint(graphql)
 
 
 def _set_log_levels():
