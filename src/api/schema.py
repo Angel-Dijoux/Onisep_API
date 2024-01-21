@@ -1,4 +1,3 @@
-from pydoc import resolve
 import typing
 from src.business_logic.formation.get_formation_details import (
     Formation,

@@ -70,4 +70,4 @@ class HtmlParser:
         title = self._extract_title()
         expectations = self._extract_expectations()
 
-        return ParcourSupExpectations(title, expectations)
+        return ParcourSupExpectations(title=title, expectations=expectations)

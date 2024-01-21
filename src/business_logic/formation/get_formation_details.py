@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, datetime
 import json
 from typing import Any, Optional
 from src.business_logic.formation.exceptions import ProcessFormationException
@@ -15,8 +15,9 @@ from src.business_logic.formation.study.get_continuation_of_study import (
     ContinuationOfStudies,
     process_continuation_studies,
 )
-
 import strawberry
+
+DATE_FORMAT = "%d/%m/%Y"
 
 
 @dataclass
@@ -32,7 +33,7 @@ class Formation:
     type: str
     jobs: Optional[list[Job]]
     continuation_studies: Optional[ContinuationOfStudies]
-    updated_at: date
+    updated_at: Optional[date]
 
 
 def _filter_by_link(formations: list[dict[str, Any]], for_id: str) -> dict[str, Any]:
@@ -70,7 +71,9 @@ def _process_formation(for_id: str) -> Formation:
         continuation_studies = process_continuation_studies(
             poursuite_etudes if poursuite_etudes else None
         )
-        updated_at = formation["modification_date"]
+        updated_at = datetime.strptime(
+            formation["modification_date"], DATE_FORMAT
+        ).date()
         return Formation(
             id=identifiant,
             exceptions=exceptions,
@@ -86,10 +89,10 @@ def _process_formation(for_id: str) -> Formation:
         )
 
 
-def get_formation_by_id(for_id: str = "FOR.1234") -> Formation:
+def get_formation_by_id(for_id: str) -> Formation:
     try:
         return _process_formation(for_id)
     except Exception as e:
         raise ProcessFormationException(
-            "Error during formation processing : " + e
+            "Error during formation processing : " + str(e)
         ) from e
