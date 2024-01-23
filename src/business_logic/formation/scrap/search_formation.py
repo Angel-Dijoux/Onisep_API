@@ -15,7 +15,7 @@ def search_formations(
 
     formated_formations = format_formations(data["results"])
 
-    return FormationsWithTotal(data["total"], formated_formations)
+    return FormationsWithTotal(total=data["total"], formations=formated_formations)
 
 
 def auth_search_formations(
@@ -24,4 +24,4 @@ def auth_search_formations(
     data = get_raw_data(limit=limit, offset=offset, query=query)
     formated_formations = format_formation_with_is_favorite(user_id, data["results"])
 
-    return FormationsWithTotal(data["total"], formated_formations)
+    return FormationsWithTotal(total=data["total"], formations=formated_formations)
