@@ -7,6 +7,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
+      - name: Start MySQL
+        run: |
+          sudo systemctl start mysql
+          mysqladmin ping
+
       - uses: shogo82148/actions-setup-mysql@v1
         with:
           distribution: "mariadb"
