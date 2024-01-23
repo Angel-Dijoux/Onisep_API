@@ -44,6 +44,7 @@ def create_app(environment=None):
 
 
 def register_blueprints(app: Flask):
+    from src.blueprints.home import home
     from src.blueprints.auth import auth
     from src.blueprints.favoris import favoris
     from src.blueprints.formations import formations
@@ -51,6 +52,7 @@ def register_blueprints(app: Flask):
     from src.blueprints.legal.views import legal
     from src.blueprints.utils import utils
 
+    app.register_blueprint(home)
     app.register_blueprint(utils)
     app.register_blueprint(auth)
     app.register_blueprint(legal)
