@@ -39,5 +39,3 @@ jobs:
       - name: Run Pytest
         run: |
           DATABASE_URI_TESTING="mysql+mysqlconnector://onisep:password@localhost/onisep_testing?charset=utf8mb4" pipenv run pytest
-
-          https://github.com/shogo82148/actions-setup-mysql
