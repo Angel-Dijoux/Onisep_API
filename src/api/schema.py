@@ -1,20 +1,15 @@
 import strawberry
 from strawberry.extensions import MaxAliasesLimiter, MaxTokensLimiter, QueryDepthLimiter
 
+# from strawberry.tools import merge_types
 
-@strawberry.type
-class Book:
-    title: str
-    author: str
+from src.api.formation.formation_resolver import FormationResolver
 
-
-@strawberry.type
-class Query:
-    books: list[Book]
-
+# types: tuple = (FormationResolver, ...)
+# Queries = merge_types("Queries", types)
 
 schema = strawberry.Schema(
-    query=Query,
+    query=FormationResolver,
     extensions=[
         QueryDepthLimiter(max_depth=10),
         MaxTokensLimiter(max_token_count=1000),
