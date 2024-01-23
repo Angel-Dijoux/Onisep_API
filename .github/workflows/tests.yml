@@ -6,24 +6,16 @@ jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_DATABASE: onisep_testing
-          MYSQL_USER: onisep
-          MYSQL_PASSWORD: password
-          MYSQL_ROOT_PASSWORD: password
-        ports:
-          - 3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
-
     steps:
-      - name: Check MySQL connection
+      - uses: shogo82148/actions-setup-mysql@v1
+        with:
+          distribution: "mariadb"
+          mysql-version: "10.6"
+      - run: mysql -uroot -e 'SELECT version()'
+
+      - name: Create MySQL user
         run: |
-          mysql --version
-          sudo apt-get install -y mysql-client
-          mysql --host 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -uroot -ppassword -e "SHOW DATABASES"
+          mysql -u root -ppassword -e "CREATE DATABASE onisep_testing; CREATE USER 'onisep'@'localhost' IDENTIFIED BY 'password'; GRANT ALL PRIVILEGES ON *.* TO 'onisep'@'localhost' WITH GRANT OPTION; FLUSH PRIVILEGES;"
 
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -44,3 +36,5 @@ jobs:
       - name: Run Pytest
         run: |
           DATABASE_URI_TESTING="mysql+mysqlconnector://onisep:password@localhost/onisep_testing?charset=utf8mb4" pipenv run pytest
+
+          https://github.com/shogo82148/actions-setup-mysql
