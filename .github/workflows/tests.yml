@@ -6,22 +6,20 @@ jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+
+    services:
+      mysql:
+        image: mysql:latest
+        env:
+          MYSQL_ROOT_PASSWORD: root_password
+          MYSQL_DATABASE: onisep_testing
+          MYSQL_USER: onisep
+          MYSQL_PASSWORD: password
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
     steps:
-      - name: Start MySQL
-        run: |
-          sudo systemctl start mysql
-          mysqladmin ping
-
-      - uses: shogo82148/actions-setup-mysql@v1
-        with:
-          distribution: "mariadb"
-          mysql-version: "10.6"
-      - run: mysql -uroot -e 'SELECT version()'
-
-      - name: Create MySQL user
-        run: |
-          mysql -u root -ppassword -e "CREATE DATABASE onisep_testing; CREATE USER 'onisep'@'localhost' IDENTIFIED BY 'password'; GRANT ALL PRIVILEGES ON *.* TO 'onisep'@'localhost' WITH GRANT OPTION; FLUSH PRIVILEGES;"
-
       - name: Checkout repository
         uses: actions/checkout@v3
 
