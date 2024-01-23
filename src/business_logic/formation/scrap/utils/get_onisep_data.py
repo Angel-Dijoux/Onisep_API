@@ -21,27 +21,29 @@ class HeaderKey(Enum):
 
 ONISEP_URL = "https://api.opendata.onisep.fr/api/1.0/dataset/"
 
-HEADERS: dict[HeaderKey, BearerToken | str] = {
-    HeaderKey.APPLICATION_ID.value: os.environ.get("ONISEP_APP_ID"),
-    HeaderKey.AUTHORIZATION.value: get_token(),
-}
+
+def _get_headers() -> dict[HeaderKey, BearerToken | str]:
+    return {
+        HeaderKey.APPLICATION_ID.value: os.environ.get("ONISEP_APP_ID"),
+        HeaderKey.AUTHORIZATION.value: get_token(),
+    }
+
 
 DATASET = "5fa591127f501"
 
 
 def get_onisep_data(params: str) -> dict:
     url = ONISEP_URL + DATASET + params
-    print("SSSSSSSSSSSSSSSS", HEADERS)
-    response = requests.get(url, headers=HEADERS)
+    response = requests.get(url, headers=_get_headers())
     if response.status_code == HTTP_200_OK:
         return response.json()
     if response.status_code == HTTP_401_UNAUTHORIZED:
-        HEADERS[HeaderKey.AUTHORIZATION.value] = get_token()
-        response = requests.get(url, headers=HEADERS)
+        _get_headers()[HeaderKey.AUTHORIZATION.value] = get_token()
+        response = requests.get(url, headers=_get_headers())
         if response.status_code == HTTP_200_OK:
             return response.json()
     raise NoOnisepAPIException(
-        f"\n status: {response.status_code} \n message : Onisep API is down.  \n dataset : {DATASET} \n headers : {HEADERS} "
+        f"\n status: {response.status_code} \n message : Onisep API is down.  \n dataset : {DATASET} \n headers : {_get_headers()} "
     )
 
 
