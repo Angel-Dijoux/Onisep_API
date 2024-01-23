@@ -34,7 +34,7 @@ class FormationDetail:
     type: str
     jobs: Optional[list[Job]]
     continuation_studies: Optional[ContinuationOfStudies]
-    updated_at: date
+    updated_at: Optional[date]
 
 
 def _filter_by_link(formations: list[dict[str, Any]], for_id: str) -> dict[str, Any]:
@@ -96,5 +96,5 @@ def get_formation_by_id(for_id: str) -> FormationDetail:
         return _process_formation(for_id)
     except Exception as e:
         raise ProcessFormationException(
-            "Error during formation processing : " + e
+            "Error during formation processing : " + str(e)
         ) from e
