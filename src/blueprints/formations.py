@@ -5,7 +5,9 @@ from flask_jwt_extended import get_jwt_identity, jwt_required
 from werkzeug.exceptions import HTTPException
 
 from src.blueprints.route_handler import HttpMethod, route_handler
-from src.business_logic.formation.get_formation_details import get_formation_by_id
+from src.business_logic.formation.get_formation_details import (
+    get_formation_details_by_id,
+)
 from src.business_logic.formation.scrap.get_main_formation import (
     auth_get_main_formations,
     get_main_formations,
@@ -44,7 +46,7 @@ def resolve_get_main_formations() -> Tuple[Response, int] | HTTPException:
     "../docs/formations/formation.yaml",
 )
 def resolve_get_formation_by_id(id: str) -> Tuple[Response, int] | HTTPException:
-    result = get_formation_by_id(id)
+    result = get_formation_details_by_id(id)
     return result, HTTP_200_OK if result else HTTP_204_NO_CONTENT
 
 
