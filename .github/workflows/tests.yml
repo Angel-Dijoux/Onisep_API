@@ -2,6 +2,7 @@ name: Tests
 on:
   push:
     paths:
+      - ./
       - .github/workflows/test_backend.yml
   workflow_call:
 
@@ -11,7 +12,7 @@ jobs:
     timeout-minutes: 10
     services:
       mysql:
-        image: mysql:8.0
+        image: mysql:8
         env:
           MYSQL_DATABASE: onisep_testing
           MYSQL_USER: onisep
