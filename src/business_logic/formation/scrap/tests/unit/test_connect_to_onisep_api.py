@@ -50,8 +50,12 @@ def test_get_onisep_data_successful(mock_onisep_token, mock_onisep_request):
     assert result == {"total": "5173"}
 
 
-def test_get_onisep_data_retry_after_unauthorized(mock_onisep_request):
+def test_get_onisep_data_retry_after_unauthorized(
+    mock_onisep_token, mock_onisep_request
+):
     # Arrange
+    mock_onisep_token.return_value = MOKED_TOKEN
+
     unauthorized_response = MagicMock()
     unauthorized_response.status_code = HTTP_401_UNAUTHORIZED
     authorized_response = MagicMock()
