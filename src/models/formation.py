@@ -1,6 +1,5 @@
 import uuid
 
-from sqlalchemy import Column, Integer, String, Text
 import strawberry
 from src.models.base_model import BaseModel
 from src.models.helpers.UUIDType import UUIDType

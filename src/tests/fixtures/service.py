@@ -1,12 +1,13 @@
 from typing import Generator
+
 import pytest
 from flask import Flask
-from sqlalchemy.orm import Session
 from flask.testing import FlaskClient
-from flask_sqlalchemy import SQLAlchemy
 from flask_jwt_extended import (
     create_access_token,
 )
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import Session
 
 from src import create_app
 from src import db as _db

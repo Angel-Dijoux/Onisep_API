@@ -1,0 +1,13 @@
+name: Ruff
+
+on: [push]
+
+jobs:
+  ruff-check:
+    runs-on: ubuntu-latest
+    name: check
+    steps:
+      - uses: actions/checkout@v3
+      - uses: chartboost/ruff-action@v1
+        with:
+          args: "--config=./pyproject.toml"

@@ -1,33 +1,25 @@
 name: Tests
-on:
-  push:
-    paths:
-      - .github/workflows/test_backend.yml
-  workflow_call:
+
+on: [push]
 
 jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+
     services:
       mysql:
-        image: mysql:8.0
+        image: mysql:latest
         env:
+          MYSQL_ROOT_PASSWORD: root_password
           MYSQL_DATABASE: onisep_testing
           MYSQL_USER: onisep
           MYSQL_PASSWORD: password
-          MYSQL_ROOT_PASSWORD: password
         ports:
-          - 3306
+          - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
-      - name: Check MySQL connection
-        run: |
-          mysql --version
-          sudo apt-get install -y mysql-client
-          mysql --host 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -uroot -psecretroot -e "SHOW DATABASES"
-
       - name: Checkout repository
         uses: actions/checkout@v3
 
@@ -46,4 +38,4 @@ jobs:
 
       - name: Run Pytest
         run: |
-          DATABASE_URI_TESTING="mysql+mysqlconnector://onisep:password@127.0.0.1:3306/onisep_testing?charset=utf8mb4" pipenv run pytest
+          DATABASE_URI_TESTING="mysql+mysqlconnector://onisep:password@localhost/onisep_testing?charset=utf8mb4" pipenv run pytest
