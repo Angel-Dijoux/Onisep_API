@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import date, datetime
+from datetime import date
 import json
 from typing import Any, Optional
 from src.business_logic.formation.exceptions import ProcessFormationException
@@ -15,14 +15,10 @@ from src.business_logic.formation.study.get_continuation_of_study import (
     ContinuationOfStudies,
     process_continuation_studies,
 )
-import strawberry
-
-DATE_FORMAT = "%d/%m/%Y"
 
 
 @dataclass
-@strawberry.type
-class FormationDetails:
+class Formation:
     id: str
     exceptions: Optional[ParcourSupExpectations]
     duree: str
@@ -33,7 +29,7 @@ class FormationDetails:
     type: str
     jobs: Optional[list[Job]]
     continuation_studies: Optional[ContinuationOfStudies]
-    updated_at: Optional[date]
+    updated_at: date
 
 
 def _filter_by_link(formations: list[dict[str, Any]], for_id: str) -> dict[str, Any]:
@@ -49,7 +45,7 @@ def _read_json_formation(for_id: str) -> Optional[dict[str, Any]]:
     return result if len(result) > 0 else None
 
 
-def _process_formation(for_id: str) -> FormationDetails:
+def _process_formation(for_id: str) -> Formation:
     formation = _read_json_formation(for_id)
 
     if formation:
@@ -64,6 +60,7 @@ def _process_formation(for_id: str) -> FormationDetails:
         certificat = formation["nature_certificat"]["libelle_nature_certificat"]
         sigle = formation["sigle"] if formation["sigle"] else None
         type_sigle = formation["type_Formation"]["type_formation_sigle"]
+
         metier = formation["metiers_formation"]["metier"]
         jobs = process_jobs(metier if metier else None)
 
@@ -71,10 +68,8 @@ def _process_formation(for_id: str) -> FormationDetails:
         continuation_studies = process_continuation_studies(
             poursuite_etudes if poursuite_etudes else None
         )
-        updated_at = datetime.strptime(
-            formation["modification_date"], DATE_FORMAT
-        ).date()
-        return FormationDetails(
+        updated_at = formation["modification_date"]
+        return Formation(
             id=identifiant,
             exceptions=exceptions,
             duree=duree,
@@ -89,10 +84,10 @@ def _process_formation(for_id: str) -> FormationDetails:
         )
 
 
-def get_formation_by_id(for_id: str) -> FormationDetails:
+def get_formation_by_id(for_id: str) -> Formation:
     try:
         return _process_formation(for_id)
     except Exception as e:
         raise ProcessFormationException(
-            "Error during formation processing : " + str(e)
+            "Error during formation processing : " + e
         ) from e

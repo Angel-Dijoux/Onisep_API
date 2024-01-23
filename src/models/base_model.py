@@ -1,17 +1,14 @@
-from datetime import date
-
-import strawberry
 from sqlalchemy import Column, DateTime, func
 from sqlalchemy.ext.declarative import declarative_base
+
 
 Model = declarative_base(name="Model")
 
 
-@strawberry.type
 class BaseModel(Model):
-    __abstract__ = True
-    created_at: date = Column(DateTime, nullable=False, default=func.now())
-    updated_at: date = Column(
+    __abstract__: bool = True
+    created_at = Column(DateTime, nullable=False, default=func.now())
+    updated_at = Column(
         DateTime, nullable=False, default=func.now(), onupdate=func.now()
     )
 

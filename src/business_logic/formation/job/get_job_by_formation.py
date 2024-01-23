@@ -1,9 +1,7 @@
 from dataclasses import dataclass
-import strawberry
 
 
 @dataclass
-@strawberry.type
 class Job:
     id: str
     libelle: str
