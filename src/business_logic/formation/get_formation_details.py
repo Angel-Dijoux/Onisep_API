@@ -1,7 +1,9 @@
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, datetime
 import json
 from typing import Any, Optional
+
+import strawberry
 from src.business_logic.formation.exceptions import ProcessFormationException
 from src.business_logic.formation.job.get_job_by_formation import Job, process_jobs
 from src.business_logic.formation.parcoursup.get_parcoursup_expectations import (
@@ -16,9 +18,12 @@ from src.business_logic.formation.study.get_continuation_of_study import (
     process_continuation_studies,
 )
 
+DATE_FORMAT = "%d/%m/%Y"
+
 
 @dataclass
-class Formation:
+@strawberry.type
+class FormationDetail:
     id: str
     exceptions: Optional[ParcourSupExpectations]
     duree: str
@@ -29,7 +34,7 @@ class Formation:
     type: str
     jobs: Optional[list[Job]]
     continuation_studies: Optional[ContinuationOfStudies]
-    updated_at: date
+    updated_at: Optional[date]
 
 
 def _filter_by_link(formations: list[dict[str, Any]], for_id: str) -> dict[str, Any]:
@@ -45,7 +50,7 @@ def _read_json_formation(for_id: str) -> Optional[dict[str, Any]]:
     return result if len(result) > 0 else None
 
 
-def _process_formation(for_id: str) -> Formation:
+def _process_formation(for_id: str) -> FormationDetail:
     formation = _read_json_formation(for_id)
 
     if formation:
@@ -68,8 +73,10 @@ def _process_formation(for_id: str) -> Formation:
         continuation_studies = process_continuation_studies(
             poursuite_etudes if poursuite_etudes else None
         )
-        updated_at = formation["modification_date"]
-        return Formation(
+        updated_at = datetime.strptime(
+            formation["modification_date"], DATE_FORMAT
+        ).date()
+        return FormationDetail(
             id=identifiant,
             exceptions=exceptions,
             duree=duree,
@@ -84,10 +91,10 @@ def _process_formation(for_id: str) -> Formation:
         )
 
 
-def get_formation_by_id(for_id: str) -> Formation:
+def get_formation_by_id(for_id: str) -> FormationDetail:
     try:
         return _process_formation(for_id)
     except Exception as e:
         raise ProcessFormationException(
-            "Error during formation processing : " + e
+            "Error during formation processing : " + str(e)
         ) from e

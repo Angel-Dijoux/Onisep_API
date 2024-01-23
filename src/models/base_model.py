@@ -7,6 +7,8 @@ Model = declarative_base(name="Model")
 
 class BaseModel(Model):
     __abstract__: bool = True
+    __allow_unmapped__: bool = True
+
     created_at = Column(DateTime, nullable=False, default=func.now())
     updated_at = Column(
         DateTime, nullable=False, default=func.now(), onupdate=func.now()

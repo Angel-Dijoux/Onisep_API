@@ -1,5 +1,6 @@
 from sqlalchemy import Column, ForeignKey, Integer
 from src.models.base_model import BaseModel
+from src.models import Formation
 from src.models.helpers.UUIDType import UUIDType
 from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy.orm import relationship
@@ -25,4 +26,4 @@ class UserFavori(BaseModel, SerializerMixin):
     )
 
     users = relationship("User", back_populates="favoris")
-    formation = relationship("Formation")
+    formation: list[Formation] = relationship("Formation")
