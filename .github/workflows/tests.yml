@@ -43,4 +43,4 @@ jobs:
 
       - name: Run Pytest
         run: |
-          DATABASE_URI_TESTING="mysql+mysqlconnector://onisep:password@127.0.0.1:3306/onisep_testing?charset=utf8mb4" pipenv run pytest
+          DATABASE_URI_TESTING="mysql+mysqlconnector://onisep:password@localhost/onisep_testing?charset=utf8mb4" pipenv run pytest
