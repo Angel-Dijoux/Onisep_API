@@ -31,6 +31,7 @@ DATASET = "5fa591127f501"
 
 def get_onisep_data(params: str) -> dict:
     url = ONISEP_URL + DATASET + params
+    print("SSSSSSSSSSSSSSSS", HEADERS)
     response = requests.get(url, headers=HEADERS)
     if response.status_code == HTTP_200_OK:
         return response.json()
