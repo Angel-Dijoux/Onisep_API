@@ -36,7 +36,6 @@ marshmallow-sqlalchemy = "*"
 apispec = "*"
 chardet = "*"
 charset-normalizer = "*"
-strawberry-graphql = {extras = ["debug-server"], version = "*"}
 
 [dev-packages]
 

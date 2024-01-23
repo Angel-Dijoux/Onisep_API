@@ -2,18 +2,14 @@ from dataclasses import dataclass, field
 from typing import Optional
 from bs4 import BeautifulSoup
 
-import strawberry
-
 
 @dataclass
-@strawberry.type
 class Expectation:
     title: str
     sub_expectations: Optional[list[str]] = field(default_factory=list)
 
 
 @dataclass
-@strawberry.type
 class ParcourSupExpectations:
     title: str
     expectations: list[Expectation]
@@ -61,6 +57,7 @@ class HtmlParser:
 
         if current_expectation:
             self.__expectations.append(current_expectation)
+
         return self.__expectations
 
     def _extract_title(self) -> str:
@@ -70,4 +67,4 @@ class HtmlParser:
         title = self._extract_title()
         expectations = self._extract_expectations()
 
-        return ParcourSupExpectations(title=title, expectations=expectations)
+        return ParcourSupExpectations(title, expectations)
