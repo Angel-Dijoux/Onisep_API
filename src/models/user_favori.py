@@ -1,9 +1,10 @@
-from sqlalchemy import Column, ForeignKey, Integer
-from src.models.base_model import BaseModel
-from src.models import Formation
-from src.models.helpers.UUIDType import UUIDType
+from sqlalchemy import ForeignKey
 from sqlalchemy_serializer import SerializerMixin
-from sqlalchemy.orm import relationship
+
+from src import db
+from src.models import Formation
+from src.models.base_model import BaseModel
+from src.models.helpers.UUIDType import UUIDType
 
 
 class UserFavori(BaseModel, SerializerMixin):
@@ -11,19 +12,19 @@ class UserFavori(BaseModel, SerializerMixin):
 
     serialize_only = "formation_id"
 
-    formation_id = Column(
+    formation_id = db.Column(
         UUIDType,
         ForeignKey("formation.id", ondelete="CASCADE"),
         primary_key=True,
         index=True,
     )
 
-    user_id = Column(
-        Integer,
+    user_id = db.Column(
+        db.Integer,
         ForeignKey("user.id", ondelete="CASCADE"),
         primary_key=True,
         index=True,
     )
 
-    users = relationship("User", back_populates="favoris")
-    formation: list[Formation] = relationship("Formation")
+    users = db.relationship("User", back_populates="favoris")
+    formation: list[Formation] = db.relationship("Formation")

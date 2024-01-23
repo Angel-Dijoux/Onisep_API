@@ -58,7 +58,7 @@ def test_search_formations_should_return_formations_without_favorite(
     mock_search_formations.return_value = MOKED_RESEARCH
 
     # Act
-    formations = search_formations("STHR", 1)
+    formations = search_formations(limit=1, offset=None, query="STHR1")
 
     # Assert
     moked_formation = MOKED_RESEARCH["results"]
@@ -68,7 +68,7 @@ def test_search_formations_should_return_formations_without_favorite(
     )
 
     assert formations == waited_result
-    mock_search_formations.assert_called_once_with("STHR", 1, None)
+    mock_search_formations.assert_called_once_with(limit=1, offset=None, query="STHR1")
 
 
 def test_authenticated_search_formations_should_return_formations_with_favorite(
@@ -87,7 +87,9 @@ def test_authenticated_search_formations_should_return_formations_with_favorite(
     db_session.commit()
 
     # Act
-    formations = auth_search_formations(user.id, "STHR", 1)
+    formations = auth_search_formations(
+        user_id=user.id, query="STHR2", limit=1, offset=None
+    )
 
     # Assert
     moked_formation = MOKED_RESEARCH["results"]
@@ -97,4 +99,4 @@ def test_authenticated_search_formations_should_return_formations_with_favorite(
     )
 
     assert formations == waited_result
-    mock_search_formations.assert_called_once_with("STHR", 1, None)
+    mock_search_formations.assert_called_once_with(query="STHR2", limit=1, offset=None)

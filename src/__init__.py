@@ -1,7 +1,8 @@
 import os
 import sys
 
-from flasgger import Swagger
+from apispec.ext.marshmallow import MarshmallowPlugin
+from apispec_webframeworks.flask import FlaskPlugin
 from flask import Flask
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
@@ -10,17 +11,9 @@ from flask_sqlalchemy import SQLAlchemy
 from loguru import logger
 
 from config import load_config
-from src.config.swagger import (
-    get_swagger_api_spec,
-    swagger_config,
-)
-from src.models.schemas import schemas
-from flasgger.utils import apispec_to_template
 
 from .errors import register_error_handlers
 from .middlewares import after_request
-from apispec.ext.marshmallow import MarshmallowPlugin
-from apispec_webframeworks.flask import FlaskPlugin
 
 db: SQLAlchemy = SQLAlchemy()
 plugins = [
@@ -44,13 +37,6 @@ def create_app(environment=None):
     with app.app_context():
         register_blueprints(app)
 
-    template = apispec_to_template(
-        app=app,
-        spec=get_swagger_api_spec(config=config, plugins=plugins),
-        definitions=schemas,
-    )
-    Swagger(app, config=swagger_config, template=template)
-
     app.after_request(after_request)
     register_error_handlers(app)
 
@@ -61,9 +47,9 @@ def register_blueprints(app: Flask):
     from src.blueprints.auth import auth
     from src.blueprints.favoris import favoris
     from src.blueprints.formations import formations
-    from src.blueprints.utils import utils
-    from src.blueprints.legal.views import legal
     from src.blueprints.graphql import graphql
+    from src.blueprints.legal.views import legal
+    from src.blueprints.utils import utils
 
     app.register_blueprint(utils)
     app.register_blueprint(auth)
