@@ -1,7 +1,9 @@
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, datetime
 import json
 from typing import Any, Optional
+
+import strawberry
 from src.business_logic.formation.exceptions import ProcessFormationException
 from src.business_logic.formation.job.get_job_by_formation import Job, process_jobs
 from src.business_logic.formation.parcoursup.get_parcoursup_expectations import (
@@ -16,8 +18,11 @@ from src.business_logic.formation.study.get_continuation_of_study import (
     process_continuation_studies,
 )
 
+DATE_FORMAT = "%d/%m/%Y"
+
 
 @dataclass
+@strawberry.type
 class FormationDetail:
     id: str
     exceptions: Optional[ParcourSupExpectations]
@@ -68,7 +73,9 @@ def _process_formation(for_id: str) -> FormationDetail:
         continuation_studies = process_continuation_studies(
             poursuite_etudes if poursuite_etudes else None
         )
-        updated_at = formation["modification_date"]
+        updated_at = datetime.strptime(
+            formation["modification_date"], DATE_FORMAT
+        ).date()
         return FormationDetail(
             id=identifiant,
             exceptions=exceptions,
