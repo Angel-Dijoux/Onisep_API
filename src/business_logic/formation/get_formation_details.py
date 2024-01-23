@@ -18,7 +18,7 @@ from src.business_logic.formation.study.get_continuation_of_study import (
 
 
 @dataclass
-class Formation:
+class FormationDetail:
     id: str
     exceptions: Optional[ParcourSupExpectations]
     duree: str
@@ -45,7 +45,7 @@ def _read_json_formation(for_id: str) -> Optional[dict[str, Any]]:
     return result if len(result) > 0 else None
 
 
-def _process_formation(for_id: str) -> Formation:
+def _process_formation(for_id: str) -> FormationDetail:
     formation = _read_json_formation(for_id)
 
     if formation:
@@ -69,7 +69,7 @@ def _process_formation(for_id: str) -> Formation:
             poursuite_etudes if poursuite_etudes else None
         )
         updated_at = formation["modification_date"]
-        return Formation(
+        return FormationDetail(
             id=identifiant,
             exceptions=exceptions,
             duree=duree,
@@ -84,7 +84,7 @@ def _process_formation(for_id: str) -> Formation:
         )
 
 
-def get_formation_by_id(for_id: str) -> Formation:
+def get_formation_by_id(for_id: str) -> FormationDetail:
     try:
         return _process_formation(for_id)
     except Exception as e:
