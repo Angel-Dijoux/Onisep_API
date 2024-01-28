@@ -54,7 +54,16 @@ def register() -> Tuple[Response, int]:
         # Hash password
         pwd_hash = generate_password_hash(password)
 
-        user = User(username=username, password=pwd_hash, email=email)
+        user_profile_picture = (
+            f"https://api.dicebear.com/7.x/notionists-neutral/svg?seed='{email}'"
+        )
+
+        user = User(
+            username=username,
+            password=pwd_hash,
+            email=email,
+            profile_pic_url=user_profile_picture,
+        )
         db.session.add(user)
         db.session.commit()
 
@@ -119,7 +128,11 @@ def login() -> Tuple[Response, int] | HTTPException:
 def me() -> Tuple[Response, int]:
     user_id = get_jwt_identity()
 
-    user = db.session.query(User).filter_by(id=user_id).first()
+    user: User = db.session.query(User).filter_by(id=user_id).first()
+    if user.profile_pic_url is None:
+        user.profile_pic_url = (
+            f"https://api.dicebear.com/7.x/notionists-neutral/svg?seed='{user.email}'"
+        )
 
     return (
         jsonify(user),

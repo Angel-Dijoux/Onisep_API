@@ -1,0 +1,19 @@
+meta {
+  name: createUser
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://localhost:5005/api/v1/auth/register
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "username": "ELki",
+    "email": "elki@gmail.com",
+    "password": "elki12345"
+  }
+}
