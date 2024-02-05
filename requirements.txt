@@ -70,7 +70,7 @@ sniffio==1.3.0
 soupsieve==2.5
 SQLAlchemy==2.0.25
 SQLAlchemy-serializer==1.4.1
-starlette==0.36.1
+starlette==0.36.2
 strawberry-graphql==0.218.0
 termcolor==2.4.0
 typer==0.9.0
