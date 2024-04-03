@@ -27,7 +27,6 @@ def test_no_authenticated_search_formation_api_should_return_formations(
     )
 
     result = response.json
-    print(result)
 
     # Then
     formation_favorite = result["formations"][0]

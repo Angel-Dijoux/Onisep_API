@@ -21,7 +21,7 @@ class FormationFactory(factory.Factory):
         "bac techno STHR Sciences et technologies de l'hôtellerie et de la restauration"
     )
     tutelle = "Ministère chargé de l'Éducation nationale et de la Jeunesse"
-    url = "http://www.onisep.fr/http/redirection/formation/slug/FOR.494"
+    url = factory.Faker("uuid4")
     domain = "hôtellerie-restauration, tourisme/hôtellerie | hôtellerie-restauration, tourisme/restauration"
     niveau_de_sortie = "Bac ou équivalent"
     duree = "1 an"
@@ -32,3 +32,4 @@ class UserFavorisFactory(factory.Factory):
         model = models.UserFavori
 
     formation = factory.SubFactory(FormationFactory)
+    users = factory.SubFactory(UserFactory)
