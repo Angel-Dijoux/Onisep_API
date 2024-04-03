@@ -37,6 +37,7 @@ apispec = "*"
 chardet = "*"
 charset-normalizer = "*"
 strawberry-graphql = {extras = ["debug-server"], version = "*"}
+flask-wtf = "*"
 
 [dev-packages]
 

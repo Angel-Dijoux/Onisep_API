@@ -1,15 +1,24 @@
-from flask import Blueprint, jsonify, request, Response, abort
-from werkzeug.exceptions import HTTPException
-from werkzeug.security import check_password_hash, generate_password_hash
+import re
+from typing import Tuple
+
 import validators
+from flasgger import swag_from
+from flask import Blueprint, Response, abort, jsonify, request
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
     get_jwt_identity,
     jwt_required,
 )
-from flasgger import swag_from
+from werkzeug.exceptions import HTTPException
+from werkzeug.security import check_password_hash, generate_password_hash
 
+from src import db
+from src.business_logic.favoris.delete_favoris_for_one_user import (
+    delete_favoris_for_one_user,
+)
+from src.business_logic.user.exceptions import AuthenticationException
+from src.business_logic.user.validate_user import validate_user
 from src.constants.http_status_codes import (
     HTTP_200_OK,
     HTTP_201_CREATED,
@@ -18,12 +27,7 @@ from src.constants.http_status_codes import (
     HTTP_404_NOT_FOUND,
     HTTP_409_CONFLICT,
 )
-from src import db
-from src.models import User, UserFavori
-
-import re
-from typing import Tuple
-
+from src.models import User
 
 auth = Blueprint("auth", __name__, url_prefix="/api/v1/auth")
 
@@ -85,38 +89,32 @@ def register() -> Tuple[Response, int]:
 @auth.post("/login")
 @swag_from("../docs/auth/login/login.yaml")
 def login() -> Tuple[Response, int] | HTTPException:
-    # Collect informations
-    data = request.json
-    if data is not None:
+    try:
+        data = request.json
+        if data is None:
+            raise AuthenticationException("Invalid request body")
+
         email = data.get("email")
         password = data.get("password")
 
-        user = db.session.query(User).filter_by(email=email).first()
+        user = validate_user(email, password)
 
-        if user:
-            # Verify if password check with password in database
-            is_pass_correct = check_password_hash(user.password, password)
+        refresh = create_refresh_token(identity=user.id)
+        access = create_access_token(identity=user.id)
 
-            if is_pass_correct:
-                refresh = create_refresh_token(identity=user.id)
-                access = create_access_token(identity=user.id)
+        response_data = {
+            "user": {
+                "id": user.id,
+                "refresh": refresh,
+                "access": access,
+                "username": user.username,
+                "email": user.email,
+            }
+        }
 
-                return (
-                    jsonify(
-                        {
-                            "user": {
-                                "id": user.id,
-                                "refresh": refresh,
-                                "access": access,
-                                "username": user.username,
-                                "email": user.email,
-                            }
-                        }
-                    ),
-                    HTTP_200_OK,
-                )
-        return {"error": "Wrong credendials"}, HTTP_401_UNAUTHORIZED
-    return {"error": "Invalid request body"}, HTTP_400_BAD_REQUEST
+        return jsonify(response_data), HTTP_200_OK
+    except AuthenticationException as e:
+        return jsonify({"error": str(e)}), HTTP_401_UNAUTHORIZED
 
 
 # Me function need JWT token return userInfo
@@ -224,12 +222,6 @@ def edit_user() -> Tuple[Response, int] | HTTPException:
 # Remove_user funtion need JWT token and remove user in database
 
 
-def remove_favoris(user_id: int) -> None:
-    favoris = db.session.query(UserFavori).filter(UserFavori.user_id == user_id).all()
-    [db.session.delete(f) for f in favoris]
-    db.session.commit()
-
-
 @auth.delete("/me/remove")
 @jwt_required()
 @swag_from("../docs/auth/remove.yaml")
@@ -240,7 +232,7 @@ def remove_user() -> Tuple[Response, int] | HTTPException:
     if not user:
         abort(HTTP_404_NOT_FOUND, "User not found")
 
-    remove_favoris(user_id)
+    delete_favoris_for_one_user(user_id)
 
     db.session.delete(user)
     db.session.commit()
