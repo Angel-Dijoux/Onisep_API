@@ -1,22 +1,19 @@
-import pytest
-from src.models.user import User
-from src.tests.factories.factories import UserFactory
 from werkzeug.security import generate_password_hash
 
+from src.models.user import User
+from src.tests.factories.factories import UserFactory
 
-@pytest.fixture
-def user_in_db(db_session) -> User:
+
+def test_jwt_authentification_should_return_user_payload_with_tokens(
+    client, db_session
+):
+    # Given
     user: User = UserFactory(
         email="test@example.com", password=generate_password_hash("password123")
     )
     db_session.add(user)
     db_session.commit()
-    return user
 
-
-def test_jwt_authentification_should_return_user_payload_with_tokens(
-    client, user_in_db
-):
     # When
     response = client.post(
         "/api/v1/auth/login",
@@ -26,14 +23,21 @@ def test_jwt_authentification_should_return_user_payload_with_tokens(
     result = response.json
 
     # Then
-    assert result["user"]["id"] == user_in_db.id
-    assert result["user"]["email"] == user_in_db.email
-    assert result["user"]["username"] == user_in_db.username
+    assert result["user"]["id"] == user.id
+    assert result["user"]["email"] == user.email
+    assert result["user"]["username"] == user.username
     assert result["user"]["access"] != ""
     assert result["user"]["refresh"] != ""
 
 
-def test_jwt_authentification_should_return_401_unauthorized(client, user_in_db):
+def test_jwt_authentification_should_return_401_unauthorized(client, db_session):
+    # Given
+    user: User = UserFactory(
+        email="test1@example.com", password=generate_password_hash("password123")
+    )
+    db_session.add(user)
+    db_session.commit()
+
     # When
     response = client.post(
         "/api/v1/auth/login",
